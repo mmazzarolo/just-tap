@@ -7,17 +7,30 @@
     "test": "jest"
   },
   "dependencies": {
+    "@babel/runtime": "^7.0.0",
+    "immer": "^1.7.2",
+    "lodash": "^4.17.11",
     "react": "16.5.0",
-    "react-native": "0.57.1"
+    "react-native": "0.57.1",
+    "react-native-gesture-handler": "^1.0.8",
+    "react-redux": "^5.1.0",
+    "redux": "^4.0.1",
+    "redux-logger": "^3.0.6",
+    "typesafe-actions": "^2.0.4"
   },
   "devDependencies": {
     "@types/jest": "^23.3.2",
-    "@types/react": "^16.4.14",
+    "@types/lodash": "^4.14.116",
+    "@types/react": "^16.4.18",
+    "@types/react-dom": "^16.0.9",
     "@types/react-native": "^0.57.0",
+    "@types/react-redux": "^6.0.9",
     "@types/react-test-renderer": "^16.0.2",
+    "@types/redux-logger": "^3.0.6",
     "babel-jest": "23.6.0",
     "jest": "23.6.0",
     "metro-react-native-babel-preset": "0.47.0",
+    "prettier": "^1.14.3",
     "react-native-typescript-transformer": "^1.2.10",
     "react-test-renderer": "16.5.0",
     "typescript": "^3.1.1"
