@@ -1,11 +1,20 @@
 import { createStore, applyMiddleware, compose } from "redux";
-import reduxLoggerMiddleware from "redux-logger";
+import { createLogger } from "redux-logger";
+import reduxThunkMiddleware from "redux-thunk";
+import createSagaMiddleware from "redux-saga";
 import { rootReducer } from "../reducers";
+import { rootSaga } from "../sagas";
+
+const loggerMiddleware = createLogger({
+  collapsed: true
+});
+
+const sagaMiddleware = createSagaMiddleware();
 
 export const createReduxStore = (initialState?: {}) => {
-  const middlewares = [reduxLoggerMiddleware];
+  const middlewares = [loggerMiddleware, reduxThunkMiddleware, sagaMiddleware];
   const enhancer = compose(applyMiddleware(...middlewares));
   const store = createStore(rootReducer, initialState!, enhancer);
-  // const store = createStore(rootReducer, applyMiddleware(epicMiddleware));
+  sagaMiddleware.run(rootSaga);
   return store;
 };

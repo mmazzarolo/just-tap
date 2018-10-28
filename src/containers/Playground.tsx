@@ -10,7 +10,7 @@ import { Tile } from "../components/Tile";
 import { Interlude } from "../components/Interlude";
 import { ReduxState } from "../types/ReduxState";
 import { actions } from "../actions";
-import { startGame } from "../actions/gameActions";
+import { thunks } from "../thunks";
 
 interface State {}
 
@@ -21,14 +21,16 @@ const mapStateToProps = (state: ReduxState) => ({
 
 const mapActionsToProps = {
   startGame: actions.startGame,
-  tap: actions.tap
+  tap: actions.tap,
+  runTimer: thunks.runTimerThunk
 };
 
 type Props = {
   timeLeft: number;
   items: Item[];
-  startGame: () => void;
-  tap: (itemIndex: number) => void;
+  startGame: typeof actions.startGame;
+  tap: typeof actions.tap;
+  runTimer: typeof thunks.runTimerThunk;
 };
 
 class Playground extends React.Component<Props, State> {
