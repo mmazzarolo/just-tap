@@ -17,7 +17,6 @@
     "redux": "^4.0.1",
     "redux-logger": "^3.0.6",
     "redux-saga": "^0.16.2",
-    "redux-thunk": "^2.3.0",
     "typesafe-actions": "^2.0.4"
   },
   "devDependencies": {
@@ -30,7 +29,6 @@
     "@types/react-test-renderer": "^16.0.2",
     "@types/redux-logger": "^3.0.6",
     "@types/redux-saga": "^0.10.5",
-    "@types/redux-thunk": "^2.1.0",
     "babel-jest": "23.6.0",
     "jest": "23.6.0",
     "metro-react-native-babel-preset": "0.47.0",

@@ -1,5 +1,6 @@
 import * as React from "react";
-import { Animated, StyleSheet, View, Easing } from "react-native";
+import { Animated, StyleSheet } from "react-native";
+import { COLOR_SHUTTLE_GRAY } from "../config/colors";
 
 interface State {}
 
@@ -12,7 +13,7 @@ export class Interlude extends React.Component<Props, State> {
   subtitleAnim: Animated.Value = new Animated.Value(0);
 
   componentDidMount() {
-    Animated.stagger(300, [
+    const animateEnter = Animated.stagger(300, [
       Animated.timing(this.titleAnim, {
         toValue: 1,
         duration: 500,
@@ -23,21 +24,34 @@ export class Interlude extends React.Component<Props, State> {
         duration: 500,
         useNativeDriver: true
       })
-    ]).start(() => this.props.onDone());
+    ]);
+    const animateExit = Animated.stagger(300, [
+      Animated.timing(this.titleAnim, {
+        toValue: 2,
+        duration: 500,
+        useNativeDriver: true
+      }),
+      Animated.timing(this.subtitleAnim, {
+        toValue: 2,
+        duration: 500,
+        useNativeDriver: true
+      })
+    ]);
+    Animated.sequence([animateEnter, animateExit]).start(this.props.onDone);
   }
 
   render() {
     const titleOpacity = this.titleAnim.interpolate({
-      inputRange: [0, 0.5, 1],
-      outputRange: [0, 0.2, 1]
+      inputRange: [0, 0.5, 1, 1.5, 2],
+      outputRange: [0, 0.2, 1, 0.2, 0]
     });
     const titleTranslateY = this.titleAnim.interpolate({
       inputRange: [0, 1],
       outputRange: [20, 0]
     });
     const subtitleOpacity = this.subtitleAnim.interpolate({
-      inputRange: [0, 0.5, 1],
-      outputRange: [0, 0.2, 1]
+      inputRange: [0, 0.5, 1, 1.5, 2],
+      outputRange: [0, 0.2, 1, 0.2, 0]
     });
     const subtitleTranslateY = this.subtitleAnim.interpolate({
       inputRange: [0, 1],
@@ -75,10 +89,10 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 44,
-    color: "#586069"
+    color: COLOR_SHUTTLE_GRAY
   },
   subtitle: {
     fontSize: 30,
-    color: "#586069"
+    color: COLOR_SHUTTLE_GRAY
   }
 });

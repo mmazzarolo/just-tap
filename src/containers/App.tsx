@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Provider } from "react-redux";
-import { Platform, StyleSheet, Text, View } from "react-native";
 import { createReduxStore } from "../utils/createReduxStore";
 import Playground from "./Playground";
 

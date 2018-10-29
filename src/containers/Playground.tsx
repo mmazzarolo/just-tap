@@ -1,57 +1,63 @@
 import * as React from "react";
-import { Platform, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { connect } from "react-redux";
-import produce from "immer";
 import { CELL_SIZE } from "../config/metrics";
-import { BOARD_COLS, BOARD_ROWS, INITIAL_TIME } from "../config/constants";
+import { BOARD_COLS, BOARD_ROWS } from "../config/constants";
 import { Item } from "../types/Item";
-import { buildItems } from "../utils/buildItems";
 import { Tile } from "../components/Tile";
 import { Interlude } from "../components/Interlude";
 import { ReduxState } from "../types/ReduxState";
 import { actions } from "../actions";
-import { thunks } from "../thunks";
+import { GameStatus } from "../types/GameStatus";
+import { COLOR_SHUTTLE_GRAY } from "../config/colors";
 
 interface State {}
 
 const mapStateToProps = (state: ReduxState) => ({
+  gameStatus: state.game.gameStatus,
   timeLeft: state.game.timeLeft,
   items: state.game.board
 });
 
 const mapActionsToProps = {
   startGame: actions.startGame,
-  tap: actions.tap,
-  runTimer: thunks.runTimerThunk
+  startNextRound: actions.startNextRound,
+  tap: actions.tap
 };
 
 type Props = {
   timeLeft: number;
+  gameStatus: GameStatus;
   items: Item[];
+  startNextRound: typeof actions.startNextRound;
   startGame: typeof actions.startGame;
   tap: typeof actions.tap;
-  runTimer: typeof thunks.runTimerThunk;
 };
 
 class Playground extends React.Component<Props, State> {
   componentDidMount() {
     this.props.startGame();
   }
-  componentDidUpdate(prevProps: Props, prevState: State) {
-    // if (isBoardEmpty(this.state) && !isBoardEmpty(prevState)) {
-    // }
-  }
+
+  componentDidUpdate(prevProps: Props) {}
 
   render() {
-    const { items, tap } = this.props;
+    const { items, gameStatus, timeLeft, tap, startNextRound } = this.props;
     return (
       <View style={styles.container}>
-        {/* <Interlude onDone={() => null} /> */}
-        <View style={styles.board}>
-          {items.map(item => (
-            <Tile key={item.id} {...item} onPress={tap} />
-          ))}
-        </View>
+        {gameStatus === GameStatus.INTERLUDE && (
+          <Interlude onDone={startNextRound} />
+        )}
+        {gameStatus === GameStatus.PLAYING && (
+          <>
+            <Text style={styles.timer}>{timeLeft}</Text>
+            <View style={styles.board}>
+              {items.map(item => (
+                <Tile key={item.id} {...item} onPress={tap} />
+              ))}
+            </View>
+          </>
+        )}
       </View>
     );
   }
@@ -67,6 +73,17 @@ const styles = StyleSheet.create({
   board: {
     width: CELL_SIZE * BOARD_ROWS,
     height: CELL_SIZE * BOARD_COLS
+  },
+  timer: {
+    color: COLOR_SHUTTLE_GRAY,
+    position: "absolute",
+    alignSelf: "center",
+    textAlign: "center",
+    top: 0,
+    left: 0,
+    width: "100%",
+    marginTop: 40,
+    fontSize: 22
   }
 });
 
@@ -74,7 +91,3 @@ export default connect(
   mapStateToProps,
   mapActionsToProps
 )(Playground);
-
-// const isBoardEmpty = (state: State) => {
-//   return state.items.filter(x => x.isActive).length === 0;
-// };

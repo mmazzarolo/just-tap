@@ -1,6 +1,7 @@
+import { getIsBoardClear, getTimeLeft } from "./../reducers/gameReducer";
 import { getType } from "typesafe-actions";
 import { actions } from "./../actions/index";
-import { eventChannel, END } from "redux-saga";
+import { eventChannel, END, delay } from "redux-saga";
 import {
   put,
   take,
@@ -8,8 +9,10 @@ import {
   all,
   call,
   race,
-  cancelled
+  cancelled,
+  select
 } from "redux-saga/effects";
+import { ReduxState } from "../types/ReduxState";
 
 const timerSaga = function*() {
   const timerCountdown = (secs: number) => {
@@ -27,11 +30,12 @@ const timerSaga = function*() {
       };
     });
   };
-  // TODO:
-  const timerCountdownChannel = yield call(timerCountdown, 4);
+
+  const timeLeft: number = yield select(getTimeLeft);
+  const timerCountdownChannel = yield call(timerCountdown, timeLeft);
   try {
     while (true) {
-      const payload = yield take(timerCountdownChannel);
+      yield take(timerCountdownChannel);
       yield put(actions.timerTick());
     }
   } finally {
@@ -47,8 +51,8 @@ const boardClearSaga = function*() {
     const tapAction: ReturnType<typeof actions.tap> = yield take(
       getType(actions.tap)
     );
-    // TODO:
-    if (tapAction.payload === 7) {
+    const isBoardClear: boolean = yield select(getIsBoardClear);
+    if (isBoardClear) {
       break;
     }
   }
@@ -62,17 +66,16 @@ const roundSaga = function*() {
   if (isTimeLimitReached) {
     yield put(actions.endGame());
   } else {
+    yield delay(250 * 2);
     yield put(actions.endRound());
   }
 };
 
-const gameSaga = function*() {
-  yield put(actions.startRound());
-};
-
 export const rootSaga = function*() {
   yield all([
-    takeEvery(getType(actions.startGame), gameSaga),
-    takeEvery(getType(actions.startRound), roundSaga)
+    takeEvery(
+      [getType(actions.startGame), getType(actions.startNextRound)],
+      roundSaga
+    )
   ]);
 };

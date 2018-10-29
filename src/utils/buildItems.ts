@@ -1,18 +1,17 @@
+import { shuffle, times } from "lodash";
 import { BOARD_ROWS, BOARD_COLS } from "./../config/constants";
-import { times } from "lodash";
 import { Item } from "../types/Item";
 
 export const buildItems = (): Item[] => {
-  const items: Item[] = [];
-  times(BOARD_ROWS * BOARD_COLS, n => {
-    const item = {
-      id: n,
-      value: n,
+  const values = shuffle(times(BOARD_ROWS * BOARD_COLS));
+  const items = values.map((value, index) => {
+    return {
+      id: index,
+      value: value,
       isActive: true,
-      row: Math.floor(n / BOARD_COLS),
-      col: Math.floor(n % BOARD_COLS)
+      row: Math.floor(index / BOARD_COLS),
+      col: Math.floor(index % BOARD_COLS)
     };
-    items.push(item);
   });
   return items;
 };
