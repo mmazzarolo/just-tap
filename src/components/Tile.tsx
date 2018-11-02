@@ -10,7 +10,7 @@ import {
 import { COLOR_SHUTTLE_GRAY, COLOR_WHITE } from "../config/colors";
 import { Item } from "../types/Item";
 import { Touchable } from "./Touchable";
-import { useEffectWhenOff } from "../utils/useEffectWhenFalse";
+import { useEffectWhenFalse } from "../utils/useEffectWhenFalse";
 
 interface Props extends Item {
   onPress: (tileId: number) => void;
@@ -47,7 +47,7 @@ export const Tile = React.memo((props: Props) => {
     animateSpawn();
   }, []);
 
-  useEffectWhenOff(animateTap, isActive);
+  useEffectWhenFalse(animateTap, isActive);
 
   const coordinatesStyle = {
     left: col * CELL_SIZE + CELL_PADDING,
