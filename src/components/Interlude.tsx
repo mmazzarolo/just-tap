@@ -6,77 +6,78 @@ interface Props {
   onDone: () => void;
 }
 
-export class Interlude extends React.Component<Props> {
-  titleAnim: Animated.Value = new Animated.Value(0);
-  subtitleAnim: Animated.Value = new Animated.Value(0);
+export const Interlude = React.memo((props: Props) => {
+  const { onDone } = props;
+  console.warn(`Rendering interlude`);
+  const [titleAnim] = React.useState(new Animated.Value(0));
+  const [subtitleAnim] = React.useState(new Animated.Value(0));
 
-  componentDidMount() {
-    const animateEnter = Animated.stagger(300, [
-      Animated.timing(this.titleAnim, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true
-      }),
-      Animated.timing(this.subtitleAnim, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true
-      })
-    ]);
-    const animateExit = Animated.stagger(300, [
-      Animated.timing(this.titleAnim, {
-        toValue: 2,
-        duration: 500,
-        useNativeDriver: true
-      }),
-      Animated.timing(this.subtitleAnim, {
-        toValue: 2,
-        duration: 500,
-        useNativeDriver: true
-      })
-    ]);
-    Animated.sequence([animateEnter, animateExit]).start(this.props.onDone);
-  }
+  const animateEnter = Animated.stagger(300, [
+    Animated.timing(titleAnim, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true
+    }),
+    Animated.timing(subtitleAnim, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true
+    })
+  ]);
+  const animateExit = Animated.stagger(300, [
+    Animated.timing(titleAnim, {
+      toValue: 2,
+      duration: 500,
+      useNativeDriver: true
+    }),
+    Animated.timing(subtitleAnim, {
+      toValue: 2,
+      duration: 500,
+      useNativeDriver: true
+    })
+  ]);
 
-  render() {
-    const titleOpacity = this.titleAnim.interpolate({
-      inputRange: [0, 0.5, 1, 1.5, 2],
-      outputRange: [0, 0.2, 1, 0.2, 0]
-    });
-    const titleTranslateY = this.titleAnim.interpolate({
-      inputRange: [0, 1],
-      outputRange: [20, 0]
-    });
-    const subtitleOpacity = this.subtitleAnim.interpolate({
-      inputRange: [0, 0.5, 1, 1.5, 2],
-      outputRange: [0, 0.2, 1, 0.2, 0]
-    });
-    const subtitleTranslateY = this.subtitleAnim.interpolate({
-      inputRange: [0, 1],
-      outputRange: [20, 0]
-    });
-    return (
-      <Animated.View style={styles.container}>
-        <Animated.View
-          style={{
-            transform: [{ translateY: titleTranslateY }],
-            opacity: titleOpacity
-          }}
-        >
-          <Animated.Text style={styles.title}>Well done.</Animated.Text>
-        </Animated.View>
-        <Animated.View
-          style={{
-            transform: [{ translateY: subtitleTranslateY }],
-            opacity: subtitleOpacity
-          }}
-        >
-          <Animated.Text style={styles.subtitle}>+5</Animated.Text>
-        </Animated.View>
+  React.useEffect(() => {
+    Animated.sequence([animateEnter, animateExit]).start(onDone);
+  }, []);
+
+  const titleOpacity = titleAnim.interpolate({
+    inputRange: [0, 0.5, 1, 1.5, 2],
+    outputRange: [0, 0.2, 1, 0.2, 0]
+  });
+  const titleTranslateY = titleAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [20, 0]
+  });
+  const subtitleOpacity = subtitleAnim.interpolate({
+    inputRange: [0, 0.5, 1, 1.5, 2],
+    outputRange: [0, 0.2, 1, 0.2, 0]
+  });
+  const subtitleTranslateY = subtitleAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [20, 0]
+  });
+  return (
+    <Animated.View style={styles.container}>
+      <Animated.View
+        style={{
+          transform: [{ translateY: titleTranslateY }],
+          opacity: titleOpacity
+        }}
+      >
+        <Animated.Text style={styles.title}>Well done.</Animated.Text>
       </Animated.View>
-    );
-  }
-}
+      <Animated.View
+        style={{
+          transform: [{ translateY: subtitleTranslateY }],
+          opacity: subtitleOpacity
+        }}
+      >
+        <Animated.Text style={styles.subtitle}>+5</Animated.Text>
+      </Animated.View>
+    </Animated.View>
+  );
+});
 
 const styles = StyleSheet.create({
   container: {

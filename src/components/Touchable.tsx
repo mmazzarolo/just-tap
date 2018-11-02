@@ -9,11 +9,13 @@ import {
 interface Props extends TapGestureHandlerProperties {
   instant?: boolean;
   onPress: () => void;
+  children: React.ReactNode;
 }
 
-export class Touchable extends React.PureComponent<Props> {
-  handleHandlerStateChange = (event: TapGestureHandlerGestureEvent) => {
-    const { instant, onPress } = this.props;
+export const Touchable = React.memo((props: Props) => {
+  const { instant, onPress, children } = props;
+  const handleHandlerStateChange = (event: TapGestureHandlerGestureEvent) => {
+    const { instant, onPress } = props;
     const state = event.nativeEvent.state;
     if (instant) {
       if (state === State.BEGAN) onPress();
@@ -22,12 +24,9 @@ export class Touchable extends React.PureComponent<Props> {
     }
   };
 
-  render() {
-    const { children } = this.props;
-    return (
-      <TapGestureHandler onHandlerStateChange={this.handleHandlerStateChange}>
-        {children}
-      </TapGestureHandler>
-    );
-  }
-}
+  return (
+    <TapGestureHandler onHandlerStateChange={handleHandlerStateChange}>
+      {children}
+    </TapGestureHandler>
+  );
+});

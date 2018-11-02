@@ -7,30 +7,23 @@ import {
   BORDER_RADIUS,
   LETTER_SIZE
 } from "../config/metrics";
-import { TapGestureHandler, State } from "react-native-gesture-handler";
 import { COLOR_SHUTTLE_GRAY, COLOR_WHITE } from "../config/colors";
 import { Item } from "../types/Item";
 import { Touchable } from "./Touchable";
+import { useEffectWhenOff } from "../utils/useEffectWhenFalse";
 
 interface Props extends Item {
   onPress: (tileId: number) => void;
 }
 
-export class Tile extends React.Component<Props> {
-  tileAnim: Animated.Value = new Animated.Value(0);
+export const Tile = React.memo((props: Props) => {
+  const { id, col, row, letter, isActive, onPress } = props;
+  console.log(`Rendering tile ${id}`);
+  console.warn("didMount");
+  const [anim] = React.useState(new Animated.Value(1));
 
-  shouldComponentUpdate(nextProps: Props) {
-    return !(this.props.isActive === nextProps.isActive);
-  }
-
-  componentDidUpdate(prevProps: Props) {
-    if (prevProps.isActive && !this.props.isActive) {
-      this.animateTap();
-    }
-  }
-
-  animateTap = () => {
-    Animated.timing(this.tileAnim, {
+  const animateTap = () => {
+    Animated.timing(anim, {
       toValue: 1,
       duration: 250,
       easing: Easing.quad,
@@ -38,45 +31,56 @@ export class Tile extends React.Component<Props> {
     }).start();
   };
 
-  handlePress = () => {
-    this.props.onPress(this.props.id);
+  const animateSpawn = () => {
+    Animated.sequence([
+      Animated.delay(80 * (col + row)),
+      Animated.timing(anim, {
+        toValue: 0,
+        duration: 250,
+        easing: Easing.quad,
+        useNativeDriver: true
+      })
+    ]).start();
   };
 
-  render() {
-    const { isActive } = this.props;
-    const { col, row, letter } = this.props;
-    const coordinatesStyle = {
-      left: col * CELL_SIZE + CELL_PADDING,
-      top: row * CELL_SIZE + CELL_PADDING
-    };
-    const scale = this.tileAnim.interpolate({
-      inputRange: [0, 1],
-      outputRange: [1, 2]
-    });
-    const opacity = this.tileAnim.interpolate({
-      inputRange: [0, 0.2, 0.5, 1],
-      outputRange: [1, 0.5, 0.25, 0]
-    });
-    return (
-      <Touchable onPress={this.handlePress} enabled={isActive}>
-        <Animated.View
-          pointerEvents={isActive ? "auto" : "none"}
-          style={[
-            coordinatesStyle,
-            styles.container,
-            styles.containerActive,
-            {
-              opacity,
-              transform: [{ scale }]
-            }
-          ]}
-        >
-          <Text style={styles.text}>{letter}</Text>
-        </Animated.View>
-      </Touchable>
-    );
-  }
-}
+  React.useEffect(() => {
+    animateSpawn();
+  }, []);
+
+  useEffectWhenOff(animateTap, isActive);
+
+  const coordinatesStyle = {
+    left: col * CELL_SIZE + CELL_PADDING,
+    top: row * CELL_SIZE + CELL_PADDING
+  };
+  const scale = anim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 2]
+  });
+  const opacity = anim.interpolate({
+    inputRange: [0, 0.2, 0.5, 1],
+    outputRange: [1, 0.5, 0.25, 0]
+  });
+
+  return (
+    <Touchable onPress={() => onPress(id)} enabled={isActive} instant>
+      <Animated.View
+        pointerEvents={isActive ? "auto" : "none"}
+        style={[
+          coordinatesStyle,
+          styles.container,
+          styles.containerActive,
+          {
+            opacity,
+            transform: [{ scale }]
+          }
+        ]}
+      >
+        <Text style={styles.text}>{letter}</Text>
+      </Animated.View>
+    </Touchable>
+  );
+});
 
 const styles = StyleSheet.create({
   container: {

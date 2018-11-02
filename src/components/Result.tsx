@@ -9,77 +9,78 @@ interface Props {
   onMenuPress: () => void;
 }
 
-export class Result extends React.Component<Props> {
-  titleAnim: Animated.Value = new Animated.Value(0);
-  subtitleAnim: Animated.Value = new Animated.Value(0);
+export const Result = React.memo((props: Props) => {
+  const { score, onRetryPress, onMenuPress } = props;
+  console.warn(`Rendering interlude`);
+  const [titleAnim] = React.useState(new Animated.Value(0));
+  const [subtitleAnim] = React.useState(new Animated.Value(0));
 
-  componentDidMount() {
-    const animateEnter = Animated.stagger(300, [
-      Animated.timing(this.titleAnim, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true
-      }),
-      Animated.timing(this.subtitleAnim, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true
-      })
-    ]);
+  const animateEnter = Animated.stagger(300, [
+    Animated.timing(titleAnim, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true
+    }),
+    Animated.timing(subtitleAnim, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true
+    })
+  ]);
+
+  React.useEffect(() => {
     animateEnter.start();
-  }
+  }, []);
 
-  handleRetryPress = () => {};
-  handleMenuPress = () => {};
+  const handleRetryPress = () => {};
+  const handleMenuPress = () => {};
 
-  render() {
-    const { score } = this.props;
-    const titleOpacity = this.titleAnim.interpolate({
-      inputRange: [0, 0.5, 1, 1.5, 2],
-      outputRange: [0, 0.2, 1, 0.2, 0]
-    });
-    const titleTranslateY = this.titleAnim.interpolate({
-      inputRange: [0, 1],
-      outputRange: [20, 0]
-    });
-    const subtitleOpacity = this.subtitleAnim.interpolate({
-      inputRange: [0, 0.5, 1, 1.5, 2],
-      outputRange: [0, 0.2, 1, 0.2, 0]
-    });
-    const subtitleTranslateY = this.subtitleAnim.interpolate({
-      inputRange: [0, 1],
-      outputRange: [20, 0]
-    });
-    return (
-      <Animated.View style={styles.container}>
-        <Animated.View
-          style={{
-            transform: [{ translateY: titleTranslateY }],
-            opacity: titleOpacity
-          }}
-        >
-          <Text style={styles.title}>Time out.</Text>
-        </Animated.View>
-        <Animated.View
-          style={{
-            transform: [{ translateY: subtitleTranslateY }],
-            opacity: subtitleOpacity
-          }}
-        >
-          <Text style={styles.subtitle}>{`Score: ${score}`}</Text>
-        </Animated.View>
-        <View style={styles.buttons}>
-          <Touchable onPress={this.handleRetryPress}>
-            <Animated.Text style={styles.button}>Retry</Animated.Text>
-          </Touchable>
-          <Touchable onPress={this.handleMenuPress}>
-            <Animated.Text style={styles.button}>Menu</Animated.Text>
-          </Touchable>
-        </View>
+  const titleOpacity = titleAnim.interpolate({
+    inputRange: [0, 0.5, 1, 1.5, 2],
+    outputRange: [0, 0.2, 1, 0.2, 0]
+  });
+  const titleTranslateY = titleAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [20, 0]
+  });
+  const subtitleOpacity = subtitleAnim.interpolate({
+    inputRange: [0, 0.5, 1, 1.5, 2],
+    outputRange: [0, 0.2, 1, 0.2, 0]
+  });
+  const subtitleTranslateY = subtitleAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [20, 0]
+  });
+
+  return (
+    <Animated.View style={styles.container}>
+      <Animated.View
+        style={{
+          transform: [{ translateY: titleTranslateY }],
+          opacity: titleOpacity
+        }}
+      >
+        <Text style={styles.title}>Time out.</Text>
       </Animated.View>
-    );
-  }
-}
+      <Animated.View
+        style={{
+          transform: [{ translateY: subtitleTranslateY }],
+          opacity: subtitleOpacity
+        }}
+      >
+        <Text style={styles.subtitle}>{`Score: ${score}`}</Text>
+      </Animated.View>
+      <View style={styles.buttons}>
+        <Touchable onPress={handleRetryPress}>
+          <Animated.Text style={styles.button}>Retry</Animated.Text>
+        </Touchable>
+        <Touchable onPress={handleMenuPress}>
+          <Animated.Text style={styles.button}>Menu</Animated.Text>
+        </Touchable>
+      </View>
+    </Animated.View>
+  );
+});
 
 const styles = StyleSheet.create({
   container: {

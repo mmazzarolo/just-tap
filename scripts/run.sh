@@ -32,7 +32,7 @@ then
     fi
 elif [[ "$platform" == "ios" ]];
 then
-    (sleep 4 && react-native run-ios && react-native log-ios) & pid=$!
+    (sleep 4 && react-native run-ios --simulator="iPhone 7" && react-native log-ios) & pid=$!
     PID_LIST+=" $pid";
 else 
     echo -e "${COLOR_RED}Invalid platform. Allowed platforms: ios, android${COLOR_DEFAULT}"
