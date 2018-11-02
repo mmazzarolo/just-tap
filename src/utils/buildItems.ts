@@ -8,6 +8,7 @@ export const buildItems = (): Item[] => {
     return {
       id: index,
       value: value,
+      letter: String.fromCharCode(65 + value),
       isActive: true,
       row: Math.floor(index / BOARD_COLS),
       col: Math.floor(index % BOARD_COLS)

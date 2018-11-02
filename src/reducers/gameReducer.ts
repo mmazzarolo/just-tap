@@ -15,6 +15,7 @@ export type State = {
   readonly currentRound: number;
   readonly currentRoundMistakes: number;
   readonly timeLeft: number;
+  readonly score: number;
 };
 
 export const initialState: State = {
@@ -22,7 +23,8 @@ export const initialState: State = {
   board: [],
   timeLeft: INITIAL_TIME,
   currentRound: 0,
-  currentRoundMistakes: 0
+  currentRoundMistakes: 0,
+  score: 0
 };
 
 export const gameReducer = (
@@ -42,10 +44,14 @@ export const gameReducer = (
         draft.gameStatus = GameStatus.INTERLUDE;
         break;
       }
+      case getType(actions.endGame): {
+        draft.gameStatus = GameStatus.ENDED;
+        break;
+      }
       case getType(actions.tap): {
-        const tappedItem = draft.board[action.payload];
         if (isTapSuccessful(draft.board, action.payload)) {
-          tappedItem.isActive = false;
+          draft.board[action.payload].isActive = false;
+          draft.score++;
         } else {
           draft.currentRoundMistakes++;
         }

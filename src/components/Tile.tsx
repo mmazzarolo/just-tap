@@ -9,13 +9,10 @@ import {
 } from "../config/metrics";
 import { TapGestureHandler, State } from "react-native-gesture-handler";
 import { COLOR_SHUTTLE_GRAY, COLOR_WHITE } from "../config/colors";
+import { Item } from "../types/Item";
+import { Touchable } from "./Touchable";
 
-interface Props {
-  id: number;
-  col: number;
-  row: number;
-  value: number;
-  isActive: boolean;
+interface Props extends Item {
   onPress: (tileId: number) => void;
 }
 
@@ -41,16 +38,13 @@ export class Tile extends React.Component<Props> {
     }).start();
   };
 
-  handleTapStateChange = (event: any) => {
-    if (event.nativeEvent.state === State.BEGAN) {
-      this.props.onPress(this.props.id);
-    }
+  handlePress = () => {
+    this.props.onPress(this.props.id);
   };
 
   render() {
-    console.log(`render tile ${this.props.id}`);
     const { isActive } = this.props;
-    const { id, col, row, value } = this.props;
+    const { col, row, letter } = this.props;
     const coordinatesStyle = {
       left: col * CELL_SIZE + CELL_PADDING,
       top: row * CELL_SIZE + CELL_PADDING
@@ -64,10 +58,7 @@ export class Tile extends React.Component<Props> {
       outputRange: [1, 0.5, 0.25, 0]
     });
     return (
-      <TapGestureHandler
-        onHandlerStateChange={this.handleTapStateChange}
-        enabled={isActive}
-      >
+      <Touchable onPress={this.handlePress} enabled={isActive}>
         <Animated.View
           pointerEvents={isActive ? "auto" : "none"}
           style={[
@@ -80,9 +71,9 @@ export class Tile extends React.Component<Props> {
             }
           ]}
         >
-          <Text style={styles.text}>{value}</Text>
+          <Text style={styles.text}>{letter}</Text>
         </Animated.View>
-      </TapGestureHandler>
+      </Touchable>
     );
   }
 }

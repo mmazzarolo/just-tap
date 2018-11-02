@@ -10,13 +10,13 @@ import { ReduxState } from "../types/ReduxState";
 import { actions } from "../actions";
 import { GameStatus } from "../types/GameStatus";
 import { COLOR_SHUTTLE_GRAY } from "../config/colors";
-
-interface State {}
+import { Result } from "../components/Result";
 
 const mapStateToProps = (state: ReduxState) => ({
   gameStatus: state.game.gameStatus,
   timeLeft: state.game.timeLeft,
-  items: state.game.board
+  items: state.game.board,
+  score: state.game.score
 });
 
 const mapActionsToProps = {
@@ -25,16 +25,9 @@ const mapActionsToProps = {
   tap: actions.tap
 };
 
-type Props = {
-  timeLeft: number;
-  gameStatus: GameStatus;
-  items: Item[];
-  startNextRound: typeof actions.startNextRound;
-  startGame: typeof actions.startGame;
-  tap: typeof actions.tap;
-};
+type Props = ReturnType<typeof mapStateToProps> & typeof mapActionsToProps;
 
-class Playground extends React.Component<Props, State> {
+class Playground extends React.Component<Props> {
   componentDidMount() {
     this.props.startGame();
   }
@@ -42,7 +35,14 @@ class Playground extends React.Component<Props, State> {
   componentDidUpdate(prevProps: Props) {}
 
   render() {
-    const { items, gameStatus, timeLeft, tap, startNextRound } = this.props;
+    const {
+      items,
+      gameStatus,
+      timeLeft,
+      tap,
+      score,
+      startNextRound
+    } = this.props;
     return (
       <View style={styles.container}>
         {gameStatus === GameStatus.INTERLUDE && (
@@ -57,6 +57,13 @@ class Playground extends React.Component<Props, State> {
               ))}
             </View>
           </>
+        )}
+        {gameStatus === GameStatus.ENDED && (
+          <Result
+            score={score}
+            onMenuPress={() => null}
+            onRetryPress={() => null}
+          />
         )}
       </View>
     );
