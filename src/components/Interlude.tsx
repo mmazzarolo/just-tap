@@ -1,6 +1,7 @@
 import React, { memo, useState } from "react";
 import { Animated, StyleSheet } from "react-native";
 import { COLOR_SHUTTLE_GRAY } from "../config/colors";
+import { useOnMount } from "../utils/useOnMount";
 
 interface Props {
   onDone: () => void;
@@ -24,6 +25,7 @@ export const Interlude = memo((props: Props) => {
       useNativeDriver: true
     })
   ]);
+
   const animateExit = Animated.stagger(300, [
     Animated.timing(titleAnim, {
       toValue: 2,
@@ -37,9 +39,9 @@ export const Interlude = memo((props: Props) => {
     })
   ]);
 
-  React.useEffect(() => {
+  useOnMount(() => {
     Animated.sequence([animateEnter, animateExit]).start(onDone);
-  }, []);
+  });
 
   const titleOpacity = titleAnim.interpolate({
     inputRange: [0, 0.5, 1, 1.5, 2],

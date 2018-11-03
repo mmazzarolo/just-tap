@@ -18,46 +18,51 @@ interface Props extends Item {
   onPress: (tileId: number) => void;
 }
 
-const animateSpawn = (anim: Animated.Value, delay: number) =>
-  Animated.sequence([
-    Animated.delay(delay),
+export const Tile = memo((props: Props) => {
+  const { id, col, row, letter, isActive, onPress, mistakes } = props;
+  console.warn(`Rendering tile ${id}`);
+  const [anim] = useState(new Animated.Value(0));
+
+  const animateSpawn = Animated.sequence([
+    Animated.delay(80 * (col + row)),
     Animated.timing(anim, {
       toValue: 1,
       duration: 250,
       easing: Easing.quad,
       useNativeDriver: true
     })
-  ]).start();
+  ]);
 
-const animateTap = (anim: Animated.Value) =>
-  Animated.timing(anim, {
+  const animateTap = Animated.timing(anim, {
     toValue: 0,
     duration: 250,
     easing: Easing.quad,
     useNativeDriver: true
-  }).start();
-
-const animateMistake = (anim: Animated.Value) =>
-  Animated.timing(anim, {
-    toValue: 2,
-    duration: 250,
-    easing: Easing.quad,
-    useNativeDriver: true
-  }).start();
-
-export const Tile = memo((props: Props) => {
-  const { id, col, row, letter, isActive, onPress, mistakes } = props;
-  console.warn(`Rendering tile ${id}`);
-  const [anim] = useState(new Animated.Value(0));
-
-  useOnMount(() => {
-    animateSpawn(anim, 80 * (col + row));
   });
 
-  useWhenFalse(() => animateTap(anim), isActive);
+  const animateMistake = Animated.sequence([
+    Animated.timing(anim, {
+      toValue: 2,
+      duration: 250,
+      easing: Easing.quad,
+      useNativeDriver: true
+    }),
+    Animated.timing(anim, {
+      toValue: 1,
+      duration: 50,
+      easing: Easing.quad,
+      useNativeDriver: true
+    })
+  ]);
+
+  useOnMount(() => {
+    animateSpawn.start();
+  });
+
+  useWhenFalse(() => animateTap.start(), isActive);
 
   useWhenIncreases(() => {
-    animateMistake(anim);
+    animateMistake.start();
   }, mistakes);
 
   const coordinatesStyle = {

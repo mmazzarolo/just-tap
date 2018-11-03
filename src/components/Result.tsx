@@ -29,11 +29,26 @@ export const Result = memo((props: Props) => {
     })
   ]);
 
+  const animateExit = Animated.stagger(300, [
+    Animated.timing(titleAnim, {
+      toValue: 2,
+      duration: 500,
+      useNativeDriver: true
+    }),
+    Animated.timing(subtitleAnim, {
+      toValue: 2,
+      duration: 500,
+      useNativeDriver: true
+    })
+  ]);
+
   useOnMount(() => {
     animateEnter.start();
   });
 
-  const handleRetryPress = () => {};
+  const handleRetryPress = () => {
+    animateExit.start(onRetryPress);
+  };
   const handleMenuPress = () => {};
 
   const titleOpacity = titleAnim.interpolate({

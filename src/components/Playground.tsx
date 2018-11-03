@@ -53,7 +53,7 @@ export const Playground = memo(() => {
         <Result
           score={score}
           onMenuPress={() => null}
-          onRetryPress={() => null}
+          onRetryPress={startGame}
         />
       )}
     </View>
