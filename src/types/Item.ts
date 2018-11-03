@@ -4,5 +4,6 @@ export interface Item {
   letter: string;
   col: number;
   row: number;
+  mistakes: number;
   isActive: boolean;
 }

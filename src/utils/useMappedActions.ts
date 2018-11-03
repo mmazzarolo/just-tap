@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useCallback } from "react";
 import { mapValues } from "lodash";
 import { useDispatch } from "redux-react-hook";
 
@@ -7,6 +7,6 @@ export function useMappedActions<T>(actionsObj: T): T {
   // @ts-ignore
   return mapValues(actionsObj, value =>
     // @ts-ignore
-    React.useCallback(x => dispatch(value(x)), [])
+    useCallback(x => dispatch(value(x)), [])
   );
 }

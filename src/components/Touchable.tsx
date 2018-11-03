@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { memo } from "react";
 import {
   TapGestureHandler,
   TapGestureHandlerGestureEvent,
@@ -12,10 +12,10 @@ interface Props extends TapGestureHandlerProperties {
   children: React.ReactNode;
 }
 
-export const Touchable = React.memo((props: Props) => {
+export const Touchable = memo((props: Props) => {
   const { instant, onPress, children } = props;
+
   const handleHandlerStateChange = (event: TapGestureHandlerGestureEvent) => {
-    const { instant, onPress } = props;
     const state = event.nativeEvent.state;
     if (instant) {
       if (state === State.BEGAN) onPress();

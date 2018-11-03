@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { memo } from "react";
 import { useMappedState } from "redux-react-hook";
 import { StyleSheet, Text, View } from "react-native";
 import { CELL_SIZE } from "../config/metrics";
@@ -11,6 +11,7 @@ import { GameStatus } from "../types/GameStatus";
 import { COLOR_SHUTTLE_GRAY } from "../config/colors";
 import { Result } from "./Result";
 import { useMappedActions } from "../utils/useMappedActions";
+import { useOnMount } from "../utils/useOnMount";
 
 const mapState = (state: ReduxState) => ({
   gameStatus: state.game.gameStatus,
@@ -25,12 +26,13 @@ const mapActions = {
   tap: actions.tap
 };
 
-export const Playground = React.memo(() => {
+export const Playground = memo(() => {
   const { items, gameStatus, timeLeft, score } = useMappedState(mapState);
   const { startGame, startNextRound, tap } = useMappedActions(mapActions);
-  React.useEffect(() => {
+
+  useOnMount(() => {
     startGame();
-  }, []);
+  });
 
   return (
     <View style={styles.container}>

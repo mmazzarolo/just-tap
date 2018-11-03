@@ -11,7 +11,8 @@ export const buildItems = (): Item[] => {
       letter: String.fromCharCode(65 + value),
       isActive: true,
       row: Math.floor(index / BOARD_COLS),
-      col: Math.floor(index % BOARD_COLS)
+      col: Math.floor(index % BOARD_COLS),
+      mistakes: 0
     };
   });
   return items;

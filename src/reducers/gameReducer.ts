@@ -13,7 +13,6 @@ export type State = {
   readonly gameStatus: GameStatus;
   readonly board: Item[];
   readonly currentRound: number;
-  readonly currentRoundMistakes: number;
   readonly timeLeft: number;
   readonly score: number;
 };
@@ -23,7 +22,6 @@ export const initialState: State = {
   board: [],
   timeLeft: INITIAL_TIME,
   currentRound: 0,
-  currentRoundMistakes: 0,
   score: 0
 };
 
@@ -53,7 +51,7 @@ export const gameReducer = (
           draft.board[action.payload].isActive = false;
           draft.score++;
         } else {
-          draft.currentRoundMistakes++;
+          draft.board[action.payload].mistakes++;
         }
         break;
       }

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { memo, useState } from "react";
 import { Animated, Easing, StyleSheet, Text } from "react-native";
 import {
   CELL_SIZE,
@@ -10,56 +10,74 @@ import {
 import { COLOR_SHUTTLE_GRAY, COLOR_WHITE } from "../config/colors";
 import { Item } from "../types/Item";
 import { Touchable } from "./Touchable";
-import { useEffectWhenFalse } from "../utils/useEffectWhenFalse";
+import { useWhenFalse } from "../utils/useWhenFalse";
+import { useOnMount } from "../utils/useOnMount";
+import { useWhenIncreases } from "../utils/useWhenIncreases";
 
 interface Props extends Item {
   onPress: (tileId: number) => void;
 }
 
-export const Tile = React.memo((props: Props) => {
-  const { id, col, row, letter, isActive, onPress } = props;
-  console.log(`Rendering tile ${id}`);
-  console.warn("didMount");
-  const [anim] = React.useState(new Animated.Value(1));
-
-  const animateTap = () => {
+const animateSpawn = (anim: Animated.Value, delay: number) =>
+  Animated.sequence([
+    Animated.delay(delay),
     Animated.timing(anim, {
       toValue: 1,
       duration: 250,
       easing: Easing.quad,
       useNativeDriver: true
-    }).start();
-  };
+    })
+  ]).start();
 
-  const animateSpawn = () => {
-    Animated.sequence([
-      Animated.delay(80 * (col + row)),
-      Animated.timing(anim, {
-        toValue: 0,
-        duration: 250,
-        easing: Easing.quad,
-        useNativeDriver: true
-      })
-    ]).start();
-  };
+const animateTap = (anim: Animated.Value) =>
+  Animated.timing(anim, {
+    toValue: 0,
+    duration: 250,
+    easing: Easing.quad,
+    useNativeDriver: true
+  }).start();
 
-  React.useEffect(() => {
-    animateSpawn();
-  }, []);
+const animateMistake = (anim: Animated.Value) =>
+  Animated.timing(anim, {
+    toValue: 2,
+    duration: 250,
+    easing: Easing.quad,
+    useNativeDriver: true
+  }).start();
 
-  useEffectWhenFalse(animateTap, isActive);
+export const Tile = memo((props: Props) => {
+  const { id, col, row, letter, isActive, onPress, mistakes } = props;
+  console.warn(`Rendering tile ${id}`);
+  const [anim] = useState(new Animated.Value(0));
+
+  useOnMount(() => {
+    animateSpawn(anim, 80 * (col + row));
+  });
+
+  useWhenFalse(() => animateTap(anim), isActive);
+
+  useWhenIncreases(() => {
+    animateMistake(anim);
+  }, mistakes);
 
   const coordinatesStyle = {
     left: col * CELL_SIZE + CELL_PADDING,
     top: row * CELL_SIZE + CELL_PADDING
   };
+  const rotate = anim.interpolate({
+    inputRange: [1, 1.2, 1.4, 1.6, 1.8, 2],
+    outputRange: ["0deg", "15deg", "-10deg", "5deg", "-5deg", "0deg"],
+    extrapolate: "clamp"
+  });
   const scale = anim.interpolate({
     inputRange: [0, 1],
-    outputRange: [1, 2]
+    outputRange: [2, 1],
+    extrapolate: "clamp"
   });
   const opacity = anim.interpolate({
     inputRange: [0, 0.2, 0.5, 1],
-    outputRange: [1, 0.5, 0.25, 0]
+    outputRange: [0, 0.25, 0.5, 1],
+    extrapolate: "clamp"
   });
 
   return (
@@ -72,7 +90,7 @@ export const Tile = React.memo((props: Props) => {
           styles.containerActive,
           {
             opacity,
-            transform: [{ scale }]
+            transform: [{ scale }, { rotate }]
           }
         ]}
       >

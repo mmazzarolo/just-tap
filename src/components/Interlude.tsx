@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { memo, useState } from "react";
 import { Animated, StyleSheet } from "react-native";
 import { COLOR_SHUTTLE_GRAY } from "../config/colors";
 
@@ -6,11 +6,11 @@ interface Props {
   onDone: () => void;
 }
 
-export const Interlude = React.memo((props: Props) => {
+export const Interlude = memo((props: Props) => {
   const { onDone } = props;
   console.warn(`Rendering interlude`);
-  const [titleAnim] = React.useState(new Animated.Value(0));
-  const [subtitleAnim] = React.useState(new Animated.Value(0));
+  const [titleAnim] = useState(new Animated.Value(0));
+  const [subtitleAnim] = useState(new Animated.Value(0));
 
   const animateEnter = Animated.stagger(300, [
     Animated.timing(titleAnim, {

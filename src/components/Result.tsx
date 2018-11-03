@@ -1,7 +1,8 @@
-import * as React from "react";
+import React, { memo, useState } from "react";
 import { Animated, StyleSheet, Text, View } from "react-native";
 import { COLOR_SHUTTLE_GRAY } from "../config/colors";
 import { Touchable } from "./Touchable";
+import { useOnMount } from "../utils/useOnMount";
 
 interface Props {
   score: number;
@@ -9,11 +10,11 @@ interface Props {
   onMenuPress: () => void;
 }
 
-export const Result = React.memo((props: Props) => {
+export const Result = memo((props: Props) => {
   const { score, onRetryPress, onMenuPress } = props;
   console.warn(`Rendering interlude`);
-  const [titleAnim] = React.useState(new Animated.Value(0));
-  const [subtitleAnim] = React.useState(new Animated.Value(0));
+  const [titleAnim] = useState(new Animated.Value(0));
+  const [subtitleAnim] = useState(new Animated.Value(0));
 
   const animateEnter = Animated.stagger(300, [
     Animated.timing(titleAnim, {
@@ -28,9 +29,9 @@ export const Result = React.memo((props: Props) => {
     })
   ]);
 
-  React.useEffect(() => {
+  useOnMount(() => {
     animateEnter.start();
-  }, []);
+  });
 
   const handleRetryPress = () => {};
   const handleMenuPress = () => {};
