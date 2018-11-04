@@ -1,7 +1,13 @@
 import React, { memo, useState } from "react";
-import { Animated, StyleSheet, Text, View } from "react-native";
+import {
+  Animated,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from "react-native";
 import { COLOR_SHUTTLE_GRAY } from "../config/colors";
-import { Touchable } from "./Touchable";
+import { Button } from "./Button";
 import { useOnMount } from "../utils/useOnMount";
 
 interface Props {
@@ -12,35 +18,33 @@ interface Props {
 
 export const Result = memo((props: Props) => {
   const { score, onRetryPress, onMenuPress } = props;
-  console.warn(`Rendering interlude`);
+  console.warn(`Rendering result`);
   const [titleAnim] = useState(new Animated.Value(0));
   const [subtitleAnim] = useState(new Animated.Value(0));
+  const [retryButtonAnim] = useState(new Animated.Value(0));
+  const [menuButtonAnim] = useState(new Animated.Value(0));
 
-  const animateEnter = Animated.stagger(300, [
-    Animated.timing(titleAnim, {
-      toValue: 1,
-      duration: 500,
-      useNativeDriver: true
-    }),
-    Animated.timing(subtitleAnim, {
-      toValue: 1,
-      duration: 500,
-      useNativeDriver: true
-    })
-  ]);
+  const animateEnter = Animated.stagger(
+    300,
+    [titleAnim, subtitleAnim, retryButtonAnim, menuButtonAnim].map(anim =>
+      Animated.timing(anim, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true
+      })
+    )
+  );
 
-  const animateExit = Animated.stagger(300, [
-    Animated.timing(titleAnim, {
-      toValue: 2,
-      duration: 500,
-      useNativeDriver: true
-    }),
-    Animated.timing(subtitleAnim, {
-      toValue: 2,
-      duration: 500,
-      useNativeDriver: true
-    })
-  ]);
+  const animateExit = Animated.stagger(
+    100,
+    [titleAnim, subtitleAnim, retryButtonAnim, menuButtonAnim].map(anim =>
+      Animated.timing(anim, {
+        toValue: 2,
+        duration: 250,
+        useNativeDriver: true
+      })
+    )
+  );
 
   useOnMount(() => {
     animateEnter.start();
@@ -51,22 +55,25 @@ export const Result = memo((props: Props) => {
   };
   const handleMenuPress = () => {};
 
-  const titleOpacity = titleAnim.interpolate({
+  const opacityRange = {
     inputRange: [0, 0.5, 1, 1.5, 2],
     outputRange: [0, 0.2, 1, 0.2, 0]
-  });
-  const titleTranslateY = titleAnim.interpolate({
+  };
+
+  const translateYRange = {
     inputRange: [0, 1],
     outputRange: [20, 0]
-  });
-  const subtitleOpacity = subtitleAnim.interpolate({
-    inputRange: [0, 0.5, 1, 1.5, 2],
-    outputRange: [0, 0.2, 1, 0.2, 0]
-  });
-  const subtitleTranslateY = subtitleAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [20, 0]
-  });
+  };
+
+  const titleOpacity = titleAnim.interpolate(opacityRange);
+  const subtitleOpacity = subtitleAnim.interpolate(opacityRange);
+  const retryButtonOpacity = retryButtonAnim.interpolate(opacityRange);
+  const menuButtonOpacity = menuButtonAnim.interpolate(opacityRange);
+
+  const titleTranslateY = titleAnim.interpolate(translateYRange);
+  const subtitleTranslateY = subtitleAnim.interpolate(translateYRange);
+  const retryButtonTranslateY = retryButtonAnim.interpolate(translateYRange);
+  const menuButtonTranslateY = menuButtonAnim.interpolate(translateYRange);
 
   return (
     <Animated.View style={styles.container}>
@@ -87,12 +94,22 @@ export const Result = memo((props: Props) => {
         <Text style={styles.subtitle}>{`Score: ${score}`}</Text>
       </Animated.View>
       <View style={styles.buttons}>
-        <Touchable onPress={handleRetryPress}>
-          <Animated.Text style={styles.button}>Retry</Animated.Text>
-        </Touchable>
-        <Touchable onPress={handleMenuPress}>
-          <Animated.Text style={styles.button}>Menu</Animated.Text>
-        </Touchable>
+        <Button
+          label="Retry"
+          onPress={handleRetryPress}
+          style={{
+            transform: [{ translateY: retryButtonTranslateY }],
+            opacity: retryButtonOpacity
+          }}
+        />
+        <Button
+          label="Menu"
+          onPress={handleMenuPress}
+          style={{
+            transform: [{ translateY: menuButtonTranslateY }],
+            opacity: menuButtonOpacity
+          }}
+        />
       </View>
     </Animated.View>
   );
@@ -118,13 +135,5 @@ const styles = StyleSheet.create({
     left: 0,
     bottom: 0,
     width: "100%"
-  },
-  button: {
-    width: "100%",
-    textAlign: "center",
-    fontSize: 20,
-    color: COLOR_SHUTTLE_GRAY,
-    fontWeight: "400",
-    marginBottom: 30
   }
 });

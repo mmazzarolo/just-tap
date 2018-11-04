@@ -6,4 +6,4 @@ export const IS_IOS = Platform.OS === "ios";
 export const IS_DEBUG_MODE_ENABLED = Boolean(window.navigator.userAgent);
 export const BOARD_ROWS = 4;
 export const BOARD_COLS = 4;
-export const INITIAL_TIME = 30;
+export const INITIAL_TIME = 20;

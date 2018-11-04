@@ -1,6 +1,6 @@
-import React, { memo } from "react";
+import React, { memo, useState } from "react";
 import { useMappedState } from "redux-react-hook";
-import { StyleSheet, Text, View } from "react-native";
+import { Animated, StyleSheet, Text, View } from "react-native";
 import { CELL_SIZE } from "../config/metrics";
 import { BOARD_COLS, BOARD_ROWS } from "../config/constants";
 import { Tile } from "./Tile";
@@ -12,6 +12,7 @@ import { COLOR_SHUTTLE_GRAY } from "../config/colors";
 import { Result } from "./Result";
 import { useMappedActions } from "../utils/useMappedActions";
 import { useOnMount } from "../utils/useOnMount";
+import { useOnUpdate } from "../utils/useOnUpdate";
 
 const mapState = (state: ReduxState) => ({
   gameStatus: state.game.gameStatus,
@@ -29,9 +30,44 @@ const mapActions = {
 export const Playground = memo(() => {
   const { items, gameStatus, timeLeft, score } = useMappedState(mapState);
   const { startGame, startNextRound, tap } = useMappedActions(mapActions);
+  const [isBoardClean, setIsBoardClean] = useState(false);
+  const [boardCleanupAnim] = useState(new Animated.Value(0));
+
+  const animateBoardCleanup = Animated.timing(boardCleanupAnim, {
+    toValue: 3,
+    duration: 800,
+    useNativeDriver: true
+  });
 
   useOnMount(() => {
     startGame();
+  });
+
+  const handleRetryPress = () => {
+    setIsBoardClean(false);
+    startGame();
+  };
+
+  useOnUpdate(prevGameStatus => {
+    if (prevGameStatus !== gameStatus && gameStatus === GameStatus.ENDED) {
+      animateBoardCleanup.start(() => {
+        setIsBoardClean(true);
+      });
+    }
+  }, gameStatus);
+
+  const timerOpacity = boardCleanupAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 0]
+  });
+  const boardOpacity = boardCleanupAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 0]
+  });
+
+  const boardTranslateY = boardCleanupAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 20]
   });
 
   return (
@@ -39,23 +75,35 @@ export const Playground = memo(() => {
       {gameStatus === GameStatus.INTERLUDE && (
         <Interlude onDone={startNextRound} />
       )}
-      {gameStatus === GameStatus.PLAYING && (
+      {(gameStatus === GameStatus.PLAYING ||
+        (gameStatus === GameStatus.ENDED && !isBoardClean)) && (
         <>
-          <Text style={styles.timer}>{timeLeft}</Text>
-          <View style={styles.board}>
+          <Animated.Text style={[styles.timer, { opacity: timerOpacity }]}>
+            {timeLeft}
+          </Animated.Text>
+          <Animated.View
+            style={[
+              styles.board,
+              {
+                opacity: boardOpacity,
+                transform: [{ translateY: boardTranslateY }]
+              }
+            ]}
+          >
             {items.map(item => (
               <Tile key={item.id} {...item} onPress={tap} />
             ))}
-          </View>
+          </Animated.View>
         </>
       )}
-      {gameStatus === GameStatus.ENDED && (
-        <Result
-          score={score}
-          onMenuPress={() => null}
-          onRetryPress={startGame}
-        />
-      )}
+      {gameStatus === GameStatus.ENDED &&
+        isBoardClean && (
+          <Result
+            score={score}
+            onMenuPress={() => null}
+            onRetryPress={handleRetryPress}
+          />
+        )}
     </View>
   );
 });

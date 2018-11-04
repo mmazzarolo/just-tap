@@ -9,7 +9,7 @@ interface Props {
 
 export const Interlude = memo((props: Props) => {
   const { onDone } = props;
-  console.warn(`Rendering interlude`);
+  // console.warn(`Rendering interlude`);
   const [titleAnim] = useState(new Animated.Value(0));
   const [subtitleAnim] = useState(new Animated.Value(0));
 
