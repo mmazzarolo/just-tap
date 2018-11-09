@@ -2,45 +2,40 @@ import React, { memo, useState } from "react";
 import { Animated, StyleSheet } from "react-native";
 import { COLOR_SHUTTLE_GRAY } from "../config/colors";
 import { useOnMount } from "../utils/useOnMount";
+import { INTERLUDE_DURATION } from "../config/constants";
 
-interface Props {
-  onDone: () => void;
-}
+interface Props {}
+
+const ANIM_DURATION = INTERLUDE_DURATION / 2;
+
+const animateInterlude = (anims: Animated.Value[], toValue: number) => {
+  const staggerDuration = ANIM_DURATION / anims.length / 2;
+  const animDuration =
+    ANIM_DURATION / anims.length + staggerDuration * (anims.length - 1);
+  return Animated.stagger(
+    staggerDuration,
+    anims.map(anim =>
+      Animated.timing(anim, {
+        toValue: toValue,
+        duration: animDuration,
+        useNativeDriver: true
+      })
+    )
+  );
+};
+
+const animateEnter = (anims: Animated.Value[]) => animateInterlude(anims, 1);
+
+const animateExit = (anims: Animated.Value[]) => animateInterlude(anims, 2);
 
 export const Interlude = memo((props: Props) => {
-  const { onDone } = props;
-  // console.warn(`Rendering interlude`);
+  console.warn(`Rendering interlude`);
   const [titleAnim] = useState(new Animated.Value(0));
   const [subtitleAnim] = useState(new Animated.Value(0));
-
-  const animateEnter = Animated.stagger(300, [
-    Animated.timing(titleAnim, {
-      toValue: 1,
-      duration: 500,
-      useNativeDriver: true
-    }),
-    Animated.timing(subtitleAnim, {
-      toValue: 1,
-      duration: 500,
-      useNativeDriver: true
-    })
-  ]);
-
-  const animateExit = Animated.stagger(300, [
-    Animated.timing(titleAnim, {
-      toValue: 2,
-      duration: 500,
-      useNativeDriver: true
-    }),
-    Animated.timing(subtitleAnim, {
-      toValue: 2,
-      duration: 500,
-      useNativeDriver: true
-    })
-  ]);
+  const anims = [titleAnim, subtitleAnim];
 
   useOnMount(() => {
-    Animated.sequence([animateEnter, animateExit]).start(onDone);
+    Animated.sequence([animateEnter(anims), animateExit(anims)]).start();
   });
 
   const titleOpacity = titleAnim.interpolate({

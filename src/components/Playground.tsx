@@ -2,7 +2,12 @@ import React, { memo, useState } from "react";
 import { useMappedState } from "redux-react-hook";
 import { Animated, StyleSheet, Text, View } from "react-native";
 import { CELL_SIZE } from "../config/metrics";
-import { BOARD_COLS, BOARD_ROWS } from "../config/constants";
+import {
+  BOARD_COLS,
+  BOARD_ROWS,
+  PREPARE_BOARD_DURATION,
+  CLEANUP_BOARD_DURATION
+} from "../config/constants";
 import { Tile } from "./Tile";
 import { Interlude } from "./Interlude";
 import { ReduxState } from "../types/ReduxState";
@@ -23,19 +28,28 @@ const mapState = (state: ReduxState) => ({
 
 const mapActions = {
   startGame: actions.startGame,
-  startNextRound: actions.startNextRound,
   tap: actions.tap
 };
 
 export const Playground = memo(() => {
   const { items, gameStatus, timeLeft, score } = useMappedState(mapState);
-  const { startGame, startNextRound, tap } = useMappedActions(mapActions);
-  const [isBoardClean, setIsBoardClean] = useState(false);
-  const [boardCleanupAnim] = useState(new Animated.Value(0));
+  const { startGame, tap } = useMappedActions(mapActions);
+  const [boardAnim] = useState(new Animated.Value(1));
+  const [timerAnim] = useState(new Animated.Value(0));
 
-  const animateBoardCleanup = Animated.timing(boardCleanupAnim, {
-    toValue: 3,
-    duration: 800,
+  // const animateBoardPrepare = Animated.timing(boardAnim, {
+  //   toValue: 1,
+  //   duration: PREPARE_BOARD_DURATION,
+  //   useNativeDriver: true
+  // });
+  const animateBoardCleanup = Animated.timing(boardAnim, {
+    toValue: 0,
+    duration: CLEANUP_BOARD_DURATION,
+    useNativeDriver: true
+  });
+  const animateShowTimer = Animated.timing(timerAnim, {
+    toValue: 1,
+    duration: 500,
     useNativeDriver: true
   });
 
@@ -44,43 +58,54 @@ export const Playground = memo(() => {
   });
 
   const handleRetryPress = () => {
-    setIsBoardClean(false);
     startGame();
   };
 
+  // useOnUpdate(prevGameStatus => {
+  //   if (
+  //     prevGameStatus !== gameStatus &&
+  //     gameStatus === GameStatus.ENDING_GAME
+  //   ) {
+  //     animateBoardPrepare.start();
+  //   }
+  // }, gameStatus);
+
   useOnUpdate(prevGameStatus => {
-    if (prevGameStatus !== gameStatus && gameStatus === GameStatus.ENDED) {
-      animateBoardCleanup.start(() => {
-        setIsBoardClean(true);
-      });
-    }
+    const isEndingGame =
+      prevGameStatus !== gameStatus && gameStatus === GameStatus.ENDING_GAME;
+    if (isEndingGame) animateBoardCleanup.start();
   }, gameStatus);
 
-  const timerOpacity = boardCleanupAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [1, 0]
-  });
-  const boardOpacity = boardCleanupAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [1, 0]
-  });
+  useOnUpdate(prevGameStatus => {
+    const isPlaying =
+      prevGameStatus !== gameStatus && gameStatus === GameStatus.PLAYING;
+    if (isPlaying) animateShowTimer.start();
+  }, gameStatus);
 
-  const boardTranslateY = boardCleanupAnim.interpolate({
+  const timerOpacity = timerAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, 20]
+    outputRange: [0, 1]
+  });
+  const boardOpacity = boardAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 1]
+  });
+  const boardTranslateY = boardAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [20, 0]
   });
 
   return (
     <View style={styles.container}>
-      {gameStatus === GameStatus.INTERLUDE && (
-        <Interlude onDone={startNextRound} />
-      )}
       {(gameStatus === GameStatus.PLAYING ||
-        (gameStatus === GameStatus.ENDED && !isBoardClean)) && (
+        gameStatus === GameStatus.STARTING_NEW_ROUND ||
+        gameStatus === GameStatus.ENDING_GAME) && (
         <>
-          <Animated.Text style={[styles.timer, { opacity: timerOpacity }]}>
-            {timeLeft}
-          </Animated.Text>
+          {gameStatus === GameStatus.PLAYING && (
+            <Animated.Text style={[styles.timer, { opacity: timerOpacity }]}>
+              {timeLeft}
+            </Animated.Text>
+          )}
           <Animated.View
             style={[
               styles.board,
@@ -91,19 +116,24 @@ export const Playground = memo(() => {
             ]}
           >
             {items.map(item => (
-              <Tile key={item.id} {...item} onPress={tap} />
+              <Tile
+                key={item.id}
+                {...item}
+                disabled={gameStatus !== GameStatus.PLAYING}
+                onPress={tap}
+              />
             ))}
           </Animated.View>
         </>
       )}
-      {gameStatus === GameStatus.ENDED &&
-        isBoardClean && (
-          <Result
-            score={score}
-            onMenuPress={() => null}
-            onRetryPress={handleRetryPress}
-          />
-        )}
+      {gameStatus === GameStatus.SHOWING_INTERLUDE && <Interlude />}
+      {gameStatus === GameStatus.SHOWING_RESULT && (
+        <Result
+          score={score}
+          onMenuPress={() => null}
+          onRetryPress={handleRetryPress}
+        />
+      )}
     </View>
   );
 });

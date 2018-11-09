@@ -10,8 +10,8 @@ import { Item } from "./../types/Item";
 import { isTapSuccessful } from "../utils/isTapSuccesful";
 
 export type State = {
-  readonly gameStatus: GameStatus;
   readonly board: Item[];
+  readonly gameStatus: GameStatus;
   readonly currentRound: number;
   readonly timeLeft: number;
   readonly score: number;
@@ -31,19 +31,31 @@ export const gameReducer = (
 ): State => {
   return produce(state, draft => {
     switch (action.type) {
-      case getType(actions.startNextRound):
       case getType(actions.startGame): {
-        draft.currentRound++;
-        draft.gameStatus = GameStatus.PLAYING;
-        draft.board = buildItems();
+        draft = initialState;
+        draft.gameStatus = GameStatus.INITIALIZING;
         break;
       }
-      case getType(actions.endRound): {
-        draft.gameStatus = GameStatus.INTERLUDE;
+      case getType(actions.startNewRound): {
+        draft.board = buildItems();
+        draft.gameStatus = GameStatus.STARTING_NEW_ROUND;
+        break;
+      }
+      case getType(actions.play): {
+        draft.currentRound++;
+        draft.gameStatus = GameStatus.PLAYING;
+        break;
+      }
+      case getType(actions.showInterlude): {
+        draft.gameStatus = GameStatus.SHOWING_INTERLUDE;
         break;
       }
       case getType(actions.endGame): {
-        draft.gameStatus = GameStatus.ENDED;
+        draft.gameStatus = GameStatus.ENDING_GAME;
+        break;
+      }
+      case getType(actions.showResult): {
+        draft.gameStatus = GameStatus.SHOWING_RESULT;
         break;
       }
       case getType(actions.tap): {

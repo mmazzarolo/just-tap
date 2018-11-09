@@ -8,12 +8,13 @@ import {
 
 interface Props extends TapGestureHandlerProperties {
   instant?: boolean;
+  disabled?: boolean;
   onPress: () => void;
   children: React.ReactNode;
 }
 
 export const Touchable = memo((props: Props) => {
-  const { instant, onPress, children } = props;
+  const { instant, onPress, children, disabled } = props;
 
   const handleHandlerStateChange = (event: TapGestureHandlerGestureEvent) => {
     const state = event.nativeEvent.state;
@@ -25,7 +26,10 @@ export const Touchable = memo((props: Props) => {
   };
 
   return (
-    <TapGestureHandler onHandlerStateChange={handleHandlerStateChange}>
+    <TapGestureHandler
+      onHandlerStateChange={handleHandlerStateChange}
+      enabled={!disabled}
+    >
       {children}
     </TapGestureHandler>
   );

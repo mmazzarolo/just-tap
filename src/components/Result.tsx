@@ -16,6 +16,29 @@ interface Props {
   onMenuPress: () => void;
 }
 
+const animateResult = (
+  anims: Animated.Value[],
+  toValue: number,
+  duration: number,
+  stagger: number
+) =>
+  Animated.stagger(
+    stagger,
+    anims.map(anim =>
+      Animated.timing(anim, {
+        toValue: toValue,
+        duration: duration,
+        useNativeDriver: true
+      })
+    )
+  );
+
+const animateEnter = (anims: Animated.Value[]) =>
+  animateResult(anims, 1, 500, 300);
+
+const animateExit = (anims: Animated.Value[]) =>
+  animateResult(anims, 2, 250, 100);
+
 export const Result = memo((props: Props) => {
   const { score, onRetryPress, onMenuPress } = props;
   console.warn(`Rendering result`);
@@ -23,35 +46,14 @@ export const Result = memo((props: Props) => {
   const [subtitleAnim] = useState(new Animated.Value(0));
   const [retryButtonAnim] = useState(new Animated.Value(0));
   const [menuButtonAnim] = useState(new Animated.Value(0));
-
-  const animateEnter = Animated.stagger(
-    300,
-    [titleAnim, subtitleAnim, retryButtonAnim, menuButtonAnim].map(anim =>
-      Animated.timing(anim, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true
-      })
-    )
-  );
-
-  const animateExit = Animated.stagger(
-    100,
-    [titleAnim, subtitleAnim, retryButtonAnim, menuButtonAnim].map(anim =>
-      Animated.timing(anim, {
-        toValue: 2,
-        duration: 250,
-        useNativeDriver: true
-      })
-    )
-  );
+  const anims = [titleAnim, subtitleAnim, retryButtonAnim, menuButtonAnim];
 
   useOnMount(() => {
-    animateEnter.start();
+    animateEnter(anims).start();
   });
 
   const handleRetryPress = () => {
-    animateExit.start(onRetryPress);
+    animateExit(anims).start(onRetryPress);
   };
   const handleMenuPress = () => {};
 

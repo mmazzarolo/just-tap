@@ -13,21 +13,30 @@ import { Touchable } from "./Touchable";
 import { useWhenFalse } from "../utils/useWhenFalse";
 import { useOnMount } from "../utils/useOnMount";
 import { useWhenIncreases } from "../utils/useWhenIncreases";
+import {
+  TILE_TAP_ANIM_DURATION,
+  PREPARE_BOARD_DURATION,
+  BOARD_ROWS
+} from "../config/constants";
 
 interface Props extends Item {
   onPress: (tileId: number) => void;
+  disabled?: boolean;
 }
 
+const SPAWN_ANIM_DURATION = PREPARE_BOARD_DURATION / BOARD_ROWS;
+const SPAWN_ANIM_DELAY = SPAWN_ANIM_DURATION / 3;
+
 export const Tile = memo((props: Props) => {
-  const { id, col, row, letter, isActive, onPress, mistakes } = props;
-  console.warn(`Rendering tile ${id}`);
+  const { id, col, row, letter, isActive, onPress, mistakes, disabled } = props;
+  console.warn(`Rendering tile`);
   const [anim] = useState(new Animated.Value(0));
 
   const animateSpawn = Animated.sequence([
-    Animated.delay(80 * (col + row)),
+    Animated.delay(SPAWN_ANIM_DELAY * (col + row)),
     Animated.timing(anim, {
       toValue: 1,
-      duration: 250,
+      duration: SPAWN_ANIM_DURATION,
       easing: Easing.quad,
       useNativeDriver: true
     })
@@ -35,7 +44,7 @@ export const Tile = memo((props: Props) => {
 
   const animateTap = Animated.timing(anim, {
     toValue: 0,
-    duration: 250,
+    duration: TILE_TAP_ANIM_DURATION,
     easing: Easing.quad,
     useNativeDriver: true
   });
@@ -86,7 +95,12 @@ export const Tile = memo((props: Props) => {
   });
 
   return (
-    <Touchable onPress={() => onPress(id)} enabled={isActive} instant>
+    <Touchable
+      onPress={() => onPress(id)}
+      enabled={isActive}
+      disabled={disabled}
+      instant
+    >
       <Animated.View
         pointerEvents={isActive ? "auto" : "none"}
         style={[
