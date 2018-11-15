@@ -1,4 +1,5 @@
-import React, { memo } from "react";
+import React, { memo, FunctionComponent } from "react";
+import { Animated } from "react-native";
 import {
   TapGestureHandler,
   TapGestureHandlerGestureEvent,
@@ -9,19 +10,18 @@ import {
 interface Props extends TapGestureHandlerProperties {
   instant?: boolean;
   disabled?: boolean;
-  onPress: () => void;
-  children: React.ReactNode;
+  onPress: (event: TapGestureHandlerGestureEvent) => void;
 }
 
-export const Touchable = memo((props: Props) => {
-  const { instant, onPress, children, disabled } = props;
+export const Touchable: FunctionComponent<Props> = memo(props => {
+  const { instant, onPress, children, disabled, ...otherProps } = props;
 
   const handleHandlerStateChange = (event: TapGestureHandlerGestureEvent) => {
     const state = event.nativeEvent.state;
     if (instant) {
-      if (state === State.BEGAN) onPress();
+      if (state === State.BEGAN) onPress(event);
     } else {
-      if (state === State.ACTIVE) onPress();
+      if (state === State.ACTIVE) onPress(event);
     }
   };
 
@@ -29,8 +29,9 @@ export const Touchable = memo((props: Props) => {
     <TapGestureHandler
       onHandlerStateChange={handleHandlerStateChange}
       enabled={!disabled}
+      {...otherProps}
     >
-      {children}
+      <Animated.View>{children}</Animated.View>
     </TapGestureHandler>
   );
 });

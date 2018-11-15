@@ -1,20 +1,14 @@
-import React, { memo } from "react";
-import {
-  Animated,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  ViewStyle
-} from "react-native";
+import React, { FunctionComponent, memo } from "react";
+import { Animated, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { COLOR_SHUTTLE_GRAY } from "../config/colors";
 
 interface Props {
   label: string | number;
   onPress: () => void;
-  style?: ViewStyle;
+  style?: any; // https://stackoverflow.com/questions/51521809/typescript-definitions-for-animated-views-style-prop
 }
 
-export const Button = memo((props: Props) => {
+export const Button: FunctionComponent<Props> = memo(props => {
   const { label, onPress, style } = props;
 
   return (
@@ -34,13 +28,9 @@ const styles = StyleSheet.create({
     marginBottom: 30
   },
   label: {
+    fontSize: 20,
     width: "100%",
     textAlign: "center",
-    fontSize: 20,
-    color: COLOR_SHUTTLE_GRAY,
-    fontWeight: "400",
-    textShadowColor: "rgba(0, 0, 0, 0.5)",
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 1
+    color: COLOR_SHUTTLE_GRAY
   }
 });

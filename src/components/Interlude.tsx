@@ -1,10 +1,12 @@
-import React, { memo, useState } from "react";
+import React, { memo, useState, FunctionComponent } from "react";
 import { Animated, StyleSheet } from "react-native";
 import { COLOR_SHUTTLE_GRAY } from "../config/colors";
 import { useOnMount } from "../utils/useOnMount";
 import { INTERLUDE_DURATION } from "../config/constants";
 
-interface Props {}
+interface Props {
+  bonusTime: number;
+}
 
 const ANIM_DURATION = INTERLUDE_DURATION / 2;
 
@@ -28,7 +30,8 @@ const animateEnter = (anims: Animated.Value[]) => animateInterlude(anims, 1);
 
 const animateExit = (anims: Animated.Value[]) => animateInterlude(anims, 2);
 
-export const Interlude = memo((props: Props) => {
+export const Interlude: FunctionComponent<Props> = memo(props => {
+  const { bonusTime } = props;
   console.warn(`Rendering interlude`);
   const [titleAnim] = useState(new Animated.Value(0));
   const [subtitleAnim] = useState(new Animated.Value(0));
@@ -70,7 +73,7 @@ export const Interlude = memo((props: Props) => {
           opacity: subtitleOpacity
         }}
       >
-        <Animated.Text style={styles.subtitle}>+5</Animated.Text>
+        <Animated.Text style={styles.subtitle}>{`+${bonusTime}`}</Animated.Text>
       </Animated.View>
     </Animated.View>
   );

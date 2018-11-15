@@ -8,6 +8,7 @@ import { ReduxState } from "./../types/ReduxState";
 import { buildItems } from "./../utils/buildItems";
 import { Item } from "./../types/Item";
 import { isTapSuccessful } from "../utils/isTapSuccesful";
+import { calculateBonusTime } from "../utils/calculateBonusTime";
 
 export type State = {
   readonly board: Item[];
@@ -32,11 +33,13 @@ export const gameReducer = (
   return produce(state, draft => {
     switch (action.type) {
       case getType(actions.startGame): {
-        draft = initialState;
-        draft.gameStatus = GameStatus.INITIALIZING;
-        break;
+        return initialState;
       }
       case getType(actions.startNewRound): {
+        draft.timeLeft =
+          draft.currentRound === 0
+            ? draft.timeLeft
+            : draft.timeLeft + calculateBonusTime(state.board);
         draft.board = buildItems();
         draft.gameStatus = GameStatus.STARTING_NEW_ROUND;
         break;

@@ -1,23 +1,24 @@
-import React, { memo, useState } from "react";
+import React, { memo, useState, FunctionComponent } from "react";
 import { useMappedState } from "redux-react-hook";
-import { Animated, StyleSheet, Text, View } from "react-native";
+import { Animated, StyleSheet, View } from "react-native";
 import { CELL_SIZE } from "../config/metrics";
 import {
   BOARD_COLS,
   BOARD_ROWS,
-  PREPARE_BOARD_DURATION,
   CLEANUP_BOARD_DURATION
 } from "../config/constants";
-import { Tile } from "./Tile";
-import { Interlude } from "./Interlude";
+import { Tile } from "../components/Tile";
+import { Interlude } from "../components/Interlude";
 import { ReduxState } from "../types/ReduxState";
 import { actions } from "../actions";
 import { GameStatus } from "../types/GameStatus";
 import { COLOR_SHUTTLE_GRAY } from "../config/colors";
-import { Result } from "./Result";
+import { Result } from "../components/Result";
 import { useMappedActions } from "../utils/useMappedActions";
 import { useOnMount } from "../utils/useOnMount";
 import { useOnUpdate } from "../utils/useOnUpdate";
+import { Screen } from "../types/Screen";
+import { calculateBonusTime } from "../utils/calculateBonusTime";
 
 const mapState = (state: ReduxState) => ({
   gameStatus: state.game.gameStatus,
@@ -28,20 +29,16 @@ const mapState = (state: ReduxState) => ({
 
 const mapActions = {
   startGame: actions.startGame,
-  tap: actions.tap
+  tap: actions.tap,
+  navigateTo: actions.navigateTo
 };
 
-export const Playground = memo(() => {
+export const Playground: FunctionComponent = memo(() => {
   const { items, gameStatus, timeLeft, score } = useMappedState(mapState);
-  const { startGame, tap } = useMappedActions(mapActions);
+  const { startGame, tap, navigateTo } = useMappedActions(mapActions);
   const [boardAnim] = useState(new Animated.Value(1));
   const [timerAnim] = useState(new Animated.Value(0));
 
-  // const animateBoardPrepare = Animated.timing(boardAnim, {
-  //   toValue: 1,
-  //   duration: PREPARE_BOARD_DURATION,
-  //   useNativeDriver: true
-  // });
   const animateBoardCleanup = Animated.timing(boardAnim, {
     toValue: 0,
     duration: CLEANUP_BOARD_DURATION,
@@ -60,15 +57,6 @@ export const Playground = memo(() => {
   const handleRetryPress = () => {
     startGame();
   };
-
-  // useOnUpdate(prevGameStatus => {
-  //   if (
-  //     prevGameStatus !== gameStatus &&
-  //     gameStatus === GameStatus.ENDING_GAME
-  //   ) {
-  //     animateBoardPrepare.start();
-  //   }
-  // }, gameStatus);
 
   useOnUpdate(prevGameStatus => {
     const isEndingGame =
@@ -126,12 +114,14 @@ export const Playground = memo(() => {
           </Animated.View>
         </>
       )}
-      {gameStatus === GameStatus.SHOWING_INTERLUDE && <Interlude />}
+      {gameStatus === GameStatus.SHOWING_INTERLUDE && (
+        <Interlude bonusTime={calculateBonusTime(items)} />
+      )}
       {gameStatus === GameStatus.SHOWING_RESULT && (
         <Result
           score={score}
-          onMenuPress={() => null}
-          onRetryPress={handleRetryPress}
+          onMenuPress={() => navigateTo(Screen.MENU)}
+          onRetryPress={startGame}
         />
       )}
     </View>

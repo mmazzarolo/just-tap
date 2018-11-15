@@ -1,4 +1,4 @@
-import React, { memo, useState } from "react";
+import React, { memo, useState, FunctionComponent } from "react";
 import { Animated, Easing, StyleSheet, Text } from "react-native";
 import {
   CELL_SIZE,
@@ -27,7 +27,7 @@ interface Props extends Item {
 const SPAWN_ANIM_DURATION = PREPARE_BOARD_DURATION / BOARD_ROWS;
 const SPAWN_ANIM_DELAY = SPAWN_ANIM_DURATION / 3;
 
-export const Tile = memo((props: Props) => {
+export const Tile: FunctionComponent<Props> = memo(props => {
   const { id, col, row, letter, isActive, onPress, mistakes, disabled } = props;
   console.warn(`Rendering tile`);
   const [anim] = useState(new Animated.Value(0));

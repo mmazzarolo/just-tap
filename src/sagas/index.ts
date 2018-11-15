@@ -20,23 +20,23 @@ import {
   TILE_TAP_ANIM_DURATION
 } from "../config/constants";
 
-const runTimerSaga = function*() {
-  const timerCountdown = (secs: number) => {
-    return eventChannel(emitter => {
-      const interval = setInterval(() => {
-        secs -= 1;
-        if (secs > 0) {
-          emitter(secs);
-        } else {
-          emitter(END);
-        }
-      }, 1000);
-      return () => {
-        clearInterval(interval);
-      };
-    });
-  };
+const timerCountdown = (secs: number) => {
+  return eventChannel(emitter => {
+    const interval = setInterval(() => {
+      secs -= 1;
+      if (secs > 0) {
+        emitter(secs);
+      } else {
+        emitter(END);
+      }
+    }, 1000);
+    return () => {
+      clearInterval(interval);
+    };
+  });
+};
 
+const runTimerSaga = function*() {
   const timeLeft: number = yield select(getTimeLeft);
   const timerCountdownChannel = yield call(timerCountdown, timeLeft);
   try {

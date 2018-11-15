@@ -1,4 +1,4 @@
-import React, { memo, useState } from "react";
+import React, { memo, useState, FunctionComponent } from "react";
 import {
   Animated,
   StyleSheet,
@@ -39,7 +39,7 @@ const animateEnter = (anims: Animated.Value[]) =>
 const animateExit = (anims: Animated.Value[]) =>
   animateResult(anims, 2, 250, 100);
 
-export const Result = memo((props: Props) => {
+export const Result: FunctionComponent<Props> = memo(props => {
   const { score, onRetryPress, onMenuPress } = props;
   console.warn(`Rendering result`);
   const [titleAnim] = useState(new Animated.Value(0));
@@ -55,7 +55,10 @@ export const Result = memo((props: Props) => {
   const handleRetryPress = () => {
     animateExit(anims).start(onRetryPress);
   };
-  const handleMenuPress = () => {};
+
+  const handleMenuPress = () => {
+    animateExit(anims).start(onMenuPress);
+  };
 
   const opacityRange = {
     inputRange: [0, 0.5, 1, 1.5, 2],
