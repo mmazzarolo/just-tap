@@ -1,14 +1,9 @@
 import React, { memo, useState, FunctionComponent } from "react";
-import {
-  Animated,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from "react-native";
+import { Animated, StyleSheet, Text } from "react-native";
 import { COLOR_SHUTTLE_GRAY } from "../config/colors";
 import { Button } from "./Button";
-import { useOnMount } from "../utils/useOnMount";
+import { StaggerAnimator } from "./StaggerAnimator";
+import { delay } from "../utils/delay";
 
 interface Props {
   score: number;
@@ -16,107 +11,49 @@ interface Props {
   onMenuPress: () => void;
 }
 
-const animateResult = (
-  anims: Animated.Value[],
-  toValue: number,
-  duration: number,
-  stagger: number
-) =>
-  Animated.stagger(
-    stagger,
-    anims.map(anim =>
-      Animated.timing(anim, {
-        toValue: toValue,
-        duration: duration,
-        useNativeDriver: true
-      })
-    )
-  );
-
-const animateEnter = (anims: Animated.Value[]) =>
-  animateResult(anims, 1, 500, 300);
-
-const animateExit = (anims: Animated.Value[]) =>
-  animateResult(anims, 2, 250, 100);
-
 export const Result: FunctionComponent<Props> = memo(props => {
   const { score, onRetryPress, onMenuPress } = props;
   console.warn(`Rendering result`);
-  const [titleAnim] = useState(new Animated.Value(0));
-  const [subtitleAnim] = useState(new Animated.Value(0));
-  const [retryButtonAnim] = useState(new Animated.Value(0));
-  const [menuButtonAnim] = useState(new Animated.Value(0));
-  const anims = [titleAnim, subtitleAnim, retryButtonAnim, menuButtonAnim];
+  const [animationStatus, setAnimationStatus] = useState<"showing" | "hiding">(
+    "showing"
+  );
 
-  useOnMount(() => {
-    animateEnter(anims).start();
-  });
-
-  const handleRetryPress = () => {
-    animateExit(anims).start(onRetryPress);
+  const handleRetryPress = async () => {
+    setAnimationStatus("hiding");
+    await delay(800);
+    onRetryPress();
   };
 
-  const handleMenuPress = () => {
-    animateExit(anims).start(onMenuPress);
+  const handleMenuPress = async () => {
+    setAnimationStatus("hiding");
+    await delay(800);
+    onMenuPress();
   };
-
-  const opacityRange = {
-    inputRange: [0, 0.5, 1, 1.5, 2],
-    outputRange: [0, 0.2, 1, 0.2, 0]
-  };
-
-  const translateYRange = {
-    inputRange: [0, 1],
-    outputRange: [20, 0]
-  };
-
-  const titleOpacity = titleAnim.interpolate(opacityRange);
-  const subtitleOpacity = subtitleAnim.interpolate(opacityRange);
-  const retryButtonOpacity = retryButtonAnim.interpolate(opacityRange);
-  const menuButtonOpacity = menuButtonAnim.interpolate(opacityRange);
-
-  const titleTranslateY = titleAnim.interpolate(translateYRange);
-  const subtitleTranslateY = subtitleAnim.interpolate(translateYRange);
-  const retryButtonTranslateY = retryButtonAnim.interpolate(translateYRange);
-  const menuButtonTranslateY = menuButtonAnim.interpolate(translateYRange);
 
   return (
-    <Animated.View style={styles.container}>
-      <Animated.View
-        style={{
-          transform: [{ translateY: titleTranslateY }],
-          opacity: titleOpacity
-        }}
-      >
+    <StaggerAnimator
+      style={styles.container}
+      status={animationStatus}
+      enterDuration={800}
+      exitDuration={800}
+    >
+      <Animated.View>
         <Text style={styles.title}>Time out.</Text>
       </Animated.View>
-      <Animated.View
-        style={{
-          transform: [{ translateY: subtitleTranslateY }],
-          opacity: subtitleOpacity
-        }}
-      >
+      <Animated.View>
         <Text style={styles.subtitle}>{`Score: ${score}`}</Text>
       </Animated.View>
-      <View style={styles.buttons}>
-        <Button
-          label="Retry"
-          onPress={handleRetryPress}
-          style={{
-            transform: [{ translateY: retryButtonTranslateY }],
-            opacity: retryButtonOpacity
-          }}
-        />
-        <Button
-          label="Menu"
-          onPress={handleMenuPress}
-          style={{
-            transform: [{ translateY: menuButtonTranslateY }],
-            opacity: menuButtonOpacity
-          }}
-        />
-      </View>
-    </Animated.View>
+      <Button
+        label="Retry"
+        onPress={handleRetryPress}
+        style={styles.retryButton}
+      />
+      <Button
+        label="Menu"
+        onPress={handleMenuPress}
+        style={styles.menuButton}
+      />
+    </StaggerAnimator>
   );
 });
 
@@ -135,7 +72,13 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: COLOR_SHUTTLE_GRAY
   },
-  buttons: {
+  retryButton: {
+    position: "absolute",
+    left: 0,
+    bottom: 60,
+    width: "100%"
+  },
+  menuButton: {
     position: "absolute",
     left: 0,
     bottom: 0,

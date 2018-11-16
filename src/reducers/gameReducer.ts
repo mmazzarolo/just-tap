@@ -84,3 +84,5 @@ export const getTimeLeft = (state: ReduxState) => state.game.timeLeft;
 
 export const getIsBoardClear = (state: ReduxState) =>
   !state.game.board.find(x => x.isActive);
+
+export const getScore = (state: ReduxState) => state.game.score;

@@ -17,7 +17,6 @@ import { Result } from "../components/Result";
 import { useMappedActions } from "../utils/useMappedActions";
 import { useOnMount } from "../utils/useOnMount";
 import { useOnUpdate } from "../utils/useOnUpdate";
-import { Screen } from "../types/Screen";
 import { calculateBonusTime } from "../utils/calculateBonusTime";
 
 const mapState = (state: ReduxState) => ({
@@ -30,12 +29,12 @@ const mapState = (state: ReduxState) => ({
 const mapActions = {
   startGame: actions.startGame,
   tap: actions.tap,
-  navigateTo: actions.navigateTo
+  navigateToMenu: actions.navigateToMenu
 };
 
 export const Playground: FunctionComponent = memo(() => {
   const { items, gameStatus, timeLeft, score } = useMappedState(mapState);
-  const { startGame, tap, navigateTo } = useMappedActions(mapActions);
+  const { startGame, tap, navigateToMenu } = useMappedActions(mapActions);
   const [boardAnim] = useState(new Animated.Value(1));
   const [timerAnim] = useState(new Animated.Value(0));
 
@@ -120,7 +119,7 @@ export const Playground: FunctionComponent = memo(() => {
       {gameStatus === GameStatus.SHOWING_RESULT && (
         <Result
           score={score}
-          onMenuPress={() => navigateTo(Screen.MENU)}
+          onMenuPress={navigateToMenu}
           onRetryPress={startGame}
         />
       )}

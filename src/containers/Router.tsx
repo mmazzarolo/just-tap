@@ -1,16 +1,36 @@
 import React, { FunctionComponent } from "react";
 import { useMappedState } from "redux-react-hook";
+import { createReduxStore } from "../utils/createReduxStore";
+import { useOnMount } from "../utils/useOnMount";
+import { getIsAppReady } from "../reducers/appReducer";
 import { ReduxState } from "../types/ReduxState";
+import { actions } from "../actions";
+import { useMappedActions } from "../utils/useMappedActions";
 import { Screen } from "../types/Screen";
 import { Playground } from "./Playground";
-import { Menu } from "../components/Menu";
+import { Menu } from "./Menu";
 
 const mapState = (state: ReduxState) => ({
+  isAppReady: getIsAppReady(state),
   currentRoute: state.router.currentScreen
 });
 
+const mapActions = {
+  rehydrate: actions.rehydrate
+};
+
 export const Router: FunctionComponent = () => {
-  const { currentRoute } = useMappedState(mapState);
+  const { isAppReady, currentRoute } = useMappedState(mapState);
+  const { rehydrate } = useMappedActions(mapActions);
+
+  useOnMount(() => {
+    rehydrate();
+  });
+
+  if (!isAppReady) {
+    return null;
+  }
+
   switch (currentRoute) {
     case Screen.MENU:
       return <Menu />;
@@ -20,5 +40,3 @@ export const Router: FunctionComponent = () => {
       return <Playground />;
   }
 };
-
-export default Router;

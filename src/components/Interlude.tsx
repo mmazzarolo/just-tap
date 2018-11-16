@@ -2,7 +2,8 @@ import React, { memo, useState, FunctionComponent } from "react";
 import { Animated, StyleSheet } from "react-native";
 import { COLOR_SHUTTLE_GRAY } from "../config/colors";
 import { useOnMount } from "../utils/useOnMount";
-import { INTERLUDE_DURATION } from "../config/constants";
+import { INTERLUDE_DURATION, MENU_ANIM_DURATION } from "../config/constants";
+import { StaggerAnimator } from "./StaggerAnimator";
 
 interface Props {
   bonusTime: number;
@@ -10,72 +11,31 @@ interface Props {
 
 const ANIM_DURATION = INTERLUDE_DURATION / 2;
 
-const animateInterlude = (anims: Animated.Value[], toValue: number) => {
-  const staggerDuration = ANIM_DURATION / anims.length / 2;
-  const animDuration =
-    ANIM_DURATION / anims.length + staggerDuration * (anims.length - 1);
-  return Animated.stagger(
-    staggerDuration,
-    anims.map(anim =>
-      Animated.timing(anim, {
-        toValue: toValue,
-        duration: animDuration,
-        useNativeDriver: true
-      })
-    )
-  );
-};
-
-const animateEnter = (anims: Animated.Value[]) => animateInterlude(anims, 1);
-
-const animateExit = (anims: Animated.Value[]) => animateInterlude(anims, 2);
-
 export const Interlude: FunctionComponent<Props> = memo(props => {
   const { bonusTime } = props;
   console.warn(`Rendering interlude`);
-  const [titleAnim] = useState(new Animated.Value(0));
-  const [subtitleAnim] = useState(new Animated.Value(0));
-  const anims = [titleAnim, subtitleAnim];
+  const [animationStatus, setAnimationStatus] = useState<"showing" | "hiding">(
+    "showing"
+  );
 
   useOnMount(() => {
-    Animated.sequence([animateEnter(anims), animateExit(anims)]).start();
+    setTimeout(() => setAnimationStatus("hiding"), MENU_ANIM_DURATION);
   });
 
-  const titleOpacity = titleAnim.interpolate({
-    inputRange: [0, 0.5, 1, 1.5, 2],
-    outputRange: [0, 0.2, 1, 0.2, 0]
-  });
-  const titleTranslateY = titleAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [20, 0]
-  });
-  const subtitleOpacity = subtitleAnim.interpolate({
-    inputRange: [0, 0.5, 1, 1.5, 2],
-    outputRange: [0, 0.2, 1, 0.2, 0]
-  });
-  const subtitleTranslateY = subtitleAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [20, 0]
-  });
   return (
-    <Animated.View style={styles.container}>
-      <Animated.View
-        style={{
-          transform: [{ translateY: titleTranslateY }],
-          opacity: titleOpacity
-        }}
-      >
+    <StaggerAnimator
+      style={styles.container}
+      status={animationStatus}
+      enterDuration={ANIM_DURATION}
+      exitDuration={ANIM_DURATION}
+    >
+      <Animated.View>
         <Animated.Text style={styles.title}>Well done.</Animated.Text>
       </Animated.View>
-      <Animated.View
-        style={{
-          transform: [{ translateY: subtitleTranslateY }],
-          opacity: subtitleOpacity
-        }}
-      >
+      <Animated.View>
         <Animated.Text style={styles.subtitle}>{`+${bonusTime}`}</Animated.Text>
       </Animated.View>
-    </Animated.View>
+    </StaggerAnimator>
   );
 });
 

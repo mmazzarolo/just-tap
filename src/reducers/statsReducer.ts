@@ -2,28 +2,29 @@ import { produce } from "immer";
 import { getType } from "typesafe-actions";
 import { actions } from "../actions";
 import { ReduxAction } from "./../types/ReduxAction";
-import { Screen } from "./../types/Screen";
 
 export type State = {
-  readonly currentScreen: Screen;
+  readonly highScore: number;
 };
 
 export const initialState: State = {
-  currentScreen: Screen.MENU
+  highScore: 0
 };
 
-export const routerReducer = (
+export const statsReducer = (
   state: State = initialState,
   action: ReduxAction
 ): State => {
   return produce(state, draft => {
     switch (action.type) {
-      case getType(actions.navigateToPlayground): {
-        draft.currentScreen = Screen.PLAYGROUND;
+      case getType(actions.rehydrateSuccess): {
+        draft.highScore = action.payload.stats.highScore;
         break;
       }
-      case getType(actions.navigateToMenu): {
-        draft.currentScreen = Screen.MENU;
+      case getType(actions.endGame): {
+        if (action.payload.score > state.highScore) {
+          draft.highScore = action.payload.score;
+        }
         break;
       }
       default:
