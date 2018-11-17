@@ -53,10 +53,6 @@ export const Playground: FunctionComponent = memo(() => {
     startGame();
   });
 
-  const handleRetryPress = () => {
-    startGame();
-  };
-
   useOnUpdate(prevGameStatus => {
     const isEndingGame =
       prevGameStatus !== gameStatus && gameStatus === GameStatus.ENDING_GAME;

@@ -1,6 +1,5 @@
 import React, { FunctionComponent } from "react";
 import { useMappedState } from "redux-react-hook";
-import { createReduxStore } from "../utils/createReduxStore";
 import { useOnMount } from "../utils/useOnMount";
 import { getIsAppReady } from "../reducers/appReducer";
 import { ReduxState } from "../types/ReduxState";
