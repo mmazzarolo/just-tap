@@ -32,7 +32,7 @@ I also thrown into the mix Redux-Saga for handling the game loop and Immer for h
 
 ## Known issues
 
-The current version of React-Native (`0.57.1`) has [a rendering issue when using the `useEffect` hook](https://github.com/facebook/react-native/issues/21967#issuecomment-437118881) that makes it delay the first component render.  
+The current version of React-Native (`~0.57.0`) has [a rendering issue when using the `useEffect` hook](https://github.com/facebook/react-native/issues/21967#issuecomment-437118881) that makes it delay the first component render.  
 As a workaround I noticed that using a `console.warn` in the components that use the `useEffect` hook fixes the issue.  
 _(Yes, this means that the app doesn't run smoothly when built in release mode)._
 
