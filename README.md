@@ -33,10 +33,10 @@ I also thrown into the mix Redux-Saga for handling the game loop and Immer for h
 ## Known issues
 
 The current version of React-Native (`~0.57.0`) has [a rendering issue when using the `useEffect` hook](https://github.com/facebook/react-native/issues/21967#issuecomment-437118881) that makes it delay the first component render.  
-As a workaround I noticed that using a `console.warn` in the components that use the `useEffect` hook fixes the issue.  
-_(Yes, this means that the app doesn't run smoothly when built in release mode)._
+I noticed that using a `console.warn` in the components that use the `useEffect` hook fixes the issue and I used it as a workaround while developing.  
+_(Yes, this means that the app doesn't run smoothly when built in release mode yet)._
 
-Here is a comparison of the app with and without the `console.warn` calls (see the delay while transitioning between the menu and the game board):
+Here is a comparison of the app with and without the `console.warn` calls (check the delay while transitioning between the menu and the game board):
 
 <p align="center">
 <img src="./.github/with-warn.gif" width="320"></img>
