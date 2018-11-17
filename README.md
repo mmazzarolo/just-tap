@@ -43,7 +43,7 @@ Here is a comparison of the app with and without the `console.warn` calls (see t
 <img src="./.github/without-warn.gif" width="320"></img>
 </p>
 
-## What I learned while building this project
+## What I learned by building this project
 
 ### React-Hooks
 
