@@ -1,10 +1,10 @@
 <p align="center">
-<img src="./.github/title.png" width="420"></img>
+<img src="./.github/title.png" width="320"></img>
 </p>
 &nbsp;  
 &nbsp;
 
-Just Tap is a yet another small React-Native game I developed in my free time for testing a new stack ([see](https://github.com/mmazzarolo/tap-the-number) [the](https://github.com/mmazzarolo/trees-and-tents-sample) [pattern](https://github.com/mmazzarolo/which-one)?).
+Just Tap is a yet another small React-Native game I developed in my free time for testing a new stack ([see](https://github.com/mmazzarolo/tap-the-number)-[the](https://github.com/mmazzarolo/trees-and-tents-sample)-[pattern](https://github.com/mmazzarolo/which-one)?).
 Hooks! 🎣
 
 ## Overview
@@ -39,8 +39,8 @@ _(Yes, this means that the app doesn't run smoothly when built in release mode).
 Here is a comparison of the app with and without the `console.warn` calls (see the delay while transitioning between the menu and the game board):
 
 <p align="center">
-<img src="./.github/with-warm.gif" width="420"></img>
-<img src="./.github/without-warn.gif" width="420"></img>
+<img src="./.github/with-warn.gif" width="320"></img>
+<img src="./.github/without-warn.gif" width="320"></img>
 </p>
 
 ## What I learned while building this project
