@@ -29,7 +29,7 @@ const SPAWN_ANIM_DELAY = SPAWN_ANIM_DURATION / 3;
 
 export const Tile: FunctionComponent<Props> = memo(props => {
   const { id, col, row, letter, isActive, onPress, mistakes, disabled } = props;
-  console.warn(`Rendering tile`);
+  console.warn(" - ");
   const [anim] = useState(new Animated.Value(0));
 
   const animateSpawn = Animated.sequence([

@@ -19,6 +19,7 @@ const mapActions = {
 };
 
 export const Menu: FunctionComponent = memo(() => {
+  console.warn(" - ");
   const { highScore } = useMappedState(mapState);
   const { navigateToPlayground } = useMappedActions(mapActions);
   const [animationStatus, setAnimationStatus] = useState<"showing" | "hiding">(
@@ -65,7 +66,7 @@ const styles = StyleSheet.create({
   scoreContainer: {
     position: "absolute",
     left: 0,
-    bottom: 30,
+    bottom: 60,
     width: "100%",
     alignItems: "center",
     justifyContent: "center"

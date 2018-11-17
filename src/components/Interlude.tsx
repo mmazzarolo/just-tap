@@ -13,7 +13,7 @@ const ANIM_DURATION = INTERLUDE_DURATION / 2;
 
 export const Interlude: FunctionComponent<Props> = memo(props => {
   const { bonusTime } = props;
-  console.warn(`Rendering interlude`);
+  console.warn(` - `);
   const [animationStatus, setAnimationStatus] = useState<"showing" | "hiding">(
     "showing"
   );

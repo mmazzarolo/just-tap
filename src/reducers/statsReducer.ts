@@ -18,7 +18,9 @@ export const statsReducer = (
   return produce(state, draft => {
     switch (action.type) {
       case getType(actions.rehydrateSuccess): {
-        draft.highScore = action.payload.stats.highScore;
+        if (action.payload.stats) {
+          draft.highScore = action.payload.stats.highScore;
+        }
         break;
       }
       case getType(actions.endGame): {

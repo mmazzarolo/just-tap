@@ -13,7 +13,7 @@ interface Props {
 
 export const Result: FunctionComponent<Props> = memo(props => {
   const { score, onRetryPress, onMenuPress } = props;
-  console.warn(`Rendering result`);
+  console.warn(` - `);
   const [animationStatus, setAnimationStatus] = useState<"showing" | "hiding">(
     "showing"
   );
