@@ -18,7 +18,7 @@ I also thrown into the mix Redux-Saga for handling the game loop and Immer for h
 - Hooks in React-Native! 🎣
 - Works on both Android and iOS
 - Game timing and events handled by Redux-Saga
-- Type-safe Redux coverage thanks to Typesafe-Actions (except for Redux-Saga)
+- Type-safe Redux coverage thanks to Typesafe-Actions
 - Immer!
 
 ### Libraries
@@ -47,10 +47,10 @@ Here is a comparison of the app with and without the `console.warn` calls (see t
 
 ### React-Hooks
 
-I'm still not sure if hooks live up to the hype around them, but I like them so far...  
-in this project I tried using them in a few different ways in this app and they're really fun to use.
+I'm still not sure if hooks live up to the hype but I like them so far...  
+In this project I tried using hooks in a few different ways and it was surpisingly fun!
 
-- The are way more re-usable and composable than what I expected
+- They're way more re-usable and composable than what I expected
 - You can finally use functional components without any drawback
 - The more I use them the more I feel like we should be careful about creating too many hooks. As a (bad) example, in this project I created 2/3 hooks that are not re-used nor contain any complex logic 👎
 - All the components of this app are pretty small, but I'd like to see how readable would be a complex component that uses hooks
@@ -58,8 +58,8 @@ in this project I tried using them in a few different ways in this app and they'
 ### Typescript, Redux & Immer
 
 There's not too much to say here, I liked [typesafe-actions](https://github.com/piotrwitek/typesafe-actions) way more then expected (the docs are great and the maintainer is doing a really great job).  
-With [typesafe-actions](https://github.com/piotrwitek/typesafe-actions), [Immer](https://github.com/mweststrate/immer), [Redux-React-Hook](), and [a small custom action mapper](./src/utils/useMappedActions) I've been able to achieve a great Redux type coverage without all the classic Redux boilerplate.  
-I'm also glad I used Redux-Saga for handling the game events/timings because... almost the entire logic of the game is contained in a single saga which controls the game flow; the components just "react" to it:
+With [typesafe-actions](https://github.com/piotrwitek/typesafe-actions), [immer](https://github.com/mweststrate/immer), [redux-react-hook](), and [a small custom action mapper](./src/utils/useMappedActions) I was been able to achieve a great Redux type coverage without all the classic Redux boilerplate.  
+I'm also glad I used [redux-saga](https://github.com/redux-saga/redux-saga) for handling the game events/timings because... almost the entire logic of the game is contained in a single saga which controls the game flow; the components just "react" to it:
 
 ```javascript
 export const runRoundSaga = function*() {
@@ -83,5 +83,5 @@ export const runRoundSaga = function*() {
 };
 ```
 
-Unfortunately I wasn't able to type the sagas as much as I wanted, but I guess it's related to its use of generators.
-I also used `// @ts-ignore` on a couple of hooks because when I created them there was still no TypeScript support available for the hooks.
+Unfortunately I wasn't able to make the sagas as much type-safe as I wanted, but I guess it's related to how TypeScript handles the generators.  
+I also used `// @ts-ignore` in a couple of hooks because when I created them there was still no TypeScript support available for the hooks.
