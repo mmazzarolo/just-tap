@@ -5,6 +5,9 @@
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "ios": "react-native run-ios",
+    "android": "react-native run-android",
+    "tsc": "tsc -b",
+    "xcode": "open ios/taps.xcodeproj",
     "test": "jest"
   },
   "dependencies": {
@@ -15,6 +18,7 @@
     "react-dom": "16.7.0-alpha.0",
     "react-native": "npm:@brunolemos/react-native",
     "react-native-gesture-handler": "^1.0.8",
+    "react-native-sound": "^0.10.9",
     "react-redux": "^5.1.0",
     "redux": "^4.0.1",
     "redux-logger": "^3.0.6",

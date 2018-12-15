@@ -18,6 +18,7 @@ import { useMappedActions } from "../utils/useMappedActions";
 import { useOnMount } from "../utils/useOnMount";
 import { useOnUpdate } from "../utils/useOnUpdate";
 import { calculateBonusTime } from "../utils/calculateBonusTime";
+import { playSound } from "../utils/playSound";
 
 const mapState = (state: ReduxState) => ({
   gameStatus: state.game.gameStatus,
@@ -58,6 +59,11 @@ export const Playground: FunctionComponent = memo(() => {
       prevGameStatus !== gameStatus && gameStatus === GameStatus.ENDING_GAME;
     if (isEndingGame) animateBoardCleanup.start();
   }, gameStatus);
+
+  const handleTap = (tileId: number) => {
+    playSound("tap");
+    tap(tileId);
+  };
 
   useOnUpdate(prevGameStatus => {
     const isPlaying =
@@ -103,7 +109,7 @@ export const Playground: FunctionComponent = memo(() => {
                 key={item.id}
                 {...item}
                 disabled={gameStatus !== GameStatus.PLAYING}
-                onPress={tap}
+                onPress={handleTap}
               />
             ))}
           </Animated.View>

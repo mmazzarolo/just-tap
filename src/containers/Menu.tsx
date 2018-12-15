@@ -9,6 +9,7 @@ import { useMappedActions } from "../utils/useMappedActions";
 import { RippleEffect } from "../components/RippleEffect";
 import { StaggerAnimator } from "../components/StaggerAnimator";
 import { MENU_ANIM_DURATION } from "../config/constants";
+import { playSound } from "../utils/playSound";
 
 const mapState = (state: ReduxState) => ({
   highScore: state.stats.highScore
@@ -26,6 +27,7 @@ export const Menu: FunctionComponent = memo(() => {
   );
 
   const handlePress = async () => {
+    playSound("start");
     setAnimationStatus("hiding");
     await delay(MENU_ANIM_DURATION);
     navigateToPlayground();
