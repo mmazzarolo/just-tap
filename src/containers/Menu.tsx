@@ -19,7 +19,6 @@ const mapActions = {
 };
 
 export const Menu: FunctionComponent = memo(() => {
-  console.warn(" - ");
   const { highScore } = useMappedState(mapState);
   const { navigateToPlayground } = useMappedActions(mapActions);
   const [animationStatus, setAnimationStatus] = useState<"showing" | "hiding">(

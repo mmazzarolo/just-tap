@@ -11,9 +11,11 @@ export const actions = {
   showResult: createStandardAction("game/SHOW_RESULT")(),
   tap: createStandardAction("game/TAP")<number>(),
   timerTick: createStandardAction("game/TIMER_TICK")(),
+
   // Router actions
   navigateToPlayground: createStandardAction("router/NAVIGATE_TO_PLAYGROUND")(),
   navigateToMenu: createStandardAction("router/NAVIGATE_TO_MENU")(),
+
   // Other generic actions
   rehydrate: createStandardAction("app/REHYDRATE_REQUEST")(),
   rehydrateSuccess: createStandardAction("app/REHYDRATE_SUCCESS")<
