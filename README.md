@@ -32,11 +32,11 @@ I also thrown into the mix Redux-Saga for handling the game loop and Immer for h
 
 ## Known issues
 
-The current version of React-Native (`0.57.1`) has [a rendering issue when using the `useEffect` hook](https://github.com/facebook/react-native/issues/21967#issuecomment-437118881) that makes it delay the first component render.  
-As a workaround I noticed that using a `console.warn` in the components that use the `useEffect` hook fixes the issue.  
-_(Yes, this means that the app doesn't run smoothly when built in release mode)._
+The current version of React-Native (`~0.57.0`) has [a rendering issue when using the `useEffect` hook](https://github.com/facebook/react-native/issues/21967#issuecomment-437118881) that makes it delay the first component render.  
+I noticed that using a `console.warn` in the components that use the `useEffect` hook fixes the issue and I used it as a workaround while developing.  
+_(Yes, this means that the app doesn't run smoothly when built in release mode yet)._
 
-Here is a comparison of the app with and without the `console.warn` calls (see the delay while transitioning between the menu and the game board):
+Here is a comparison of the app with and without the `console.warn` calls (check the delay while transitioning between the menu and the game board):
 
 <p align="center">
 <img src="./.github/with-warn.gif" width="320"></img>
@@ -58,7 +58,7 @@ In this project I tried using hooks in a few different ways and it was surpising
 ### Typescript, Redux & Immer
 
 There's not too much to say here, I liked [typesafe-actions](https://github.com/piotrwitek/typesafe-actions) way more then expected (the docs are great and the maintainer is doing a really great job).  
-With [typesafe-actions](https://github.com/piotrwitek/typesafe-actions), [immer](https://github.com/mweststrate/immer), [redux-react-hook](), and [a small custom action mapper](./src/utils/useMappedActions) I was been able to achieve a great Redux type coverage without all the classic Redux boilerplate.  
+With [typesafe-actions](https://github.com/piotrwitek/typesafe-actions), [immer](https://github.com/mweststrate/immer), [redux-react-hook](), and [a small custom action mapper](./src/utils/useMappedActions.ts) I was been able to achieve a great Redux type coverage without all the classic Redux boilerplate.  
 I'm also glad I used [redux-saga](https://github.com/redux-saga/redux-saga) for handling the game events/timings because... almost the entire logic of the game is contained in a single saga which controls the game flow; the components just "react" to it:
 
 ```javascript
