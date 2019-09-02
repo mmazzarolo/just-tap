@@ -58,7 +58,7 @@ In this project I tried using hooks in a few different ways and it was surpising
 ### Typescript, Redux & Immer
 
 There's not too much to say here, I liked [typesafe-actions](https://github.com/piotrwitek/typesafe-actions) way more then expected (the docs are great and the maintainer is doing a really great job).  
-With [typesafe-actions](https://github.com/piotrwitek/typesafe-actions), [immer](https://github.com/mweststrate/immer), [redux-react-hook](), and [a small custom action mapper](./src/utils/useMappedActions.ts) I was been able to achieve a great Redux type coverage without all the classic Redux boilerplate.  
+With [typesafe-actions](https://github.com/piotrwitek/typesafe-actions), [immer](https://github.com/mweststrate/immer), [redux-react-hook](https://github.com/facebookincubator/redux-react-hook), and [a small custom action mapper](./src/utils/useMappedActions.ts) I was been able to achieve a great Redux type coverage without all the classic Redux boilerplate.  
 I'm also glad I used [redux-saga](https://github.com/redux-saga/redux-saga) for handling the game events/timings because... almost the entire logic of the game is contained in a single saga which controls the game flow; the components just "react" to it:
 
 ```javascript
